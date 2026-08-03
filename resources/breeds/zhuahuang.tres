@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="HorseBreed" load_steps=2 format=3 uid="uid://breed_zhuahuang"]
+
+[ext_resource type="Script" path="res://scripts/resources/horse_breed.gd" id="1_breed"]
+
+[resource]
+script = ExtResource("1_breed")
+breed_name = "爪黄飞电"
+base_speed = 30.0
+base_stamina = 15.0
+personality_min = 10.0
+personality_max = 90.0
+temper_min = 10.0
+temper_max = 90.0
+obedience_min = 10.0
+rarity = 0
+spawn_weight = 75.0
+color = Color(0.9, 0.8, 0.2, 1)
+encyclopedia_text = "爪黄飞电是三国时期的名马，据传为魏国大将典韦的坐骑。此马通体黄色，奔跑时四蹄如飞，故得此名。爪黄飞电性格温和，适合新手骑手逐步提升技巧。"

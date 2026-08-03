@@ -1,0 +1,60 @@
+[gd_scene format=3 uid="uid://ctlf8ctr7kmvr"]
+
+[ext_resource type="Script" uid="uid://p5egirkbgx04" path="res://scripts/scenes/stable_menu.gd" id="1_4jxth"]
+
+[node name="Control" type="Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource("1_4jxth")
+
+[node name="Overlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.173, 0.094, 0.063, 0.85)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+
+[node name="Panel" type="Panel" parent="CenterContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(620, 530)
+
+[node name="VBox" type="VBoxContainer" parent="CenterContainer/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+theme_override_constants/separation = 16
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_top = 16
+theme_override_constants/margin_bottom = 16
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 36
+text = "🐴 马棚"
+horizontal_alignment = 1
+
+[node name="Slots" type="GridContainer" parent="CenterContainer/Panel/VBox"]
+layout_mode = 2
+columns = 3
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 10
+
+[node name="StatusLabel" type="Label" parent="CenterContainer/Panel/VBox"]
+layout_mode = 2
+horizontal_alignment = 1
+
+[node name="BackButton" type="Button" parent="CenterContainer/Panel/VBox"]
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_font_sizes/font_size = 24
+text = "返回"

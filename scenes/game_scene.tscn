@@ -1,0 +1,70 @@
+[gd_scene format=3 uid="uid://c524715rtcn0v"]
+
+[ext_resource type="Script" uid="uid://bdo4tdpqufrtg" path="res://scripts/game/game_scene.gd" id="1_w5aja"]
+[ext_resource type="Script" uid="uid://b1ko3yfgfmg05" path="res://scripts/game/player.gd" id="2_onqr8"]
+[ext_resource type="Script" uid="uid://bwmdjx6i88raw" path="res://scripts/game/camera_controller.gd" id="3_ycayy"]
+[ext_resource type="Script" uid="uid://dsdcuyx54c7te" path="res://scripts/game/ui/game_hud.gd" id="4_bw6k5"]
+[ext_resource type="Script" uid="uid://cqmups3ukysce" path="res://scripts/game/ui/game_over_panel.gd" id="5_y3j0m"]
+[ext_resource type="Texture2D" uid="uid://bew8sk57kj8h0" path="res://Art_Resource/Background/sky.png" id="6_sky"]
+[ext_resource type="Texture2D" uid="uid://bvdv3btfnhy0i" path="res://Art_Resource/Background/grass.png" id="7_grass"]
+
+[node name="GameScene" type="Node2D" unique_id=1340259937]
+script = ExtResource("1_w5aja")
+
+[node name="Obstacles" type="Node2D" parent="." unique_id=603441731]
+
+[node name="Horses" type="Node2D" parent="." unique_id=135087232]
+
+[node name="Player" type="CharacterBody2D" parent="." unique_id=2068395406]
+script = ExtResource("2_onqr8")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Player" unique_id=1733497697]
+
+[node name="CollisionShape" type="CollisionShape2D" parent="Player" unique_id=355422418]
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=701943152]
+script = ExtResource("3_ycayy")
+
+[node name="GameHUD" type="CanvasLayer" parent="." unique_id=520502898]
+script = ExtResource("4_bw6k5")
+
+[node name="VBox" type="VBoxContainer" parent="GameHUD" unique_id=270387086]
+
+[node name="DistanceLabel" type="Label" parent="GameHUD/VBox" unique_id=1944088775]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "距离: 0 m"
+
+[node name="BestDistLabel" type="Label" parent="GameHUD/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "最远: 0 m"
+
+[node name="HorseLabel" type="Label" parent="GameHUD/VBox" unique_id=71785180]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+
+[node name="StaminaBar" type="ProgressBar" parent="GameHUD/VBox" unique_id=746406486]
+layout_mode = 2
+value = 100.0
+
+[node name="GameOverPanel" type="CanvasLayer" parent="." unique_id=1543395109]
+script = ExtResource("5_y3j0m")
+
+[node name="Background" type="ParallaxBackground" parent="."]
+
+[node name="SkyLayer" type="ParallaxLayer" parent="Background"]
+motion_scale = Vector2(0, 0)
+
+[node name="Sky" type="TextureRect" parent="Background/SkyLayer"]
+texture = ExtResource("6_sky")
+expand_mode = 1
+
+[node name="GroundLayer" type="ParallaxLayer" parent="Background"]
+motion_mirroring = Vector2(2000, 0)
+
+[node name="Grass" type="TextureRect" parent="Background/GroundLayer" unique_id=1357216831]
+offset_right = 2000.0
+offset_bottom = 600.0
+texture = ExtResource("7_grass")
+expand_mode = 1

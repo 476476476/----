@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="HorseBreed" load_steps=2 format=3 uid="uid://breed_mongolian"]
+
+[ext_resource type="Script" path="res://scripts/resources/horse_breed.gd" id="1_breed"]
+
+[resource]
+script = ExtResource("1_breed")
+breed_name = "蒙古马"
+base_speed = 40.0
+base_stamina = 20.0
+personality_min = 20.0
+personality_max = 80.0
+temper_min = 20.0
+temper_max = 80.0
+obedience_min = 0.0
+rarity = 0
+spawn_weight = 75.0
+color = Color(0.545, 0.271, 0.075, 1)
+encyclopedia_text = "蒙古马是中国最古老的马种之一，起源于蒙古高原。体型矮小但极为耐劳，适应恶劣环境，是草原游牧民族最信赖的伙伴。蒙古马性格温顺，容易驯服，是每位骑手的入门之选。"

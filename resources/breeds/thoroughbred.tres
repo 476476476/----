@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="HorseBreed" load_steps=2 format=3 uid="uid://breed_thoroughbred"]
+
+[ext_resource type="Script" path="res://scripts/resources/horse_breed.gd" id="1_breed"]
+
+[resource]
+script = ExtResource("1_breed")
+breed_name = "纯血马"
+base_speed = 72.0
+base_stamina = 15.0
+personality_min = 60.0
+personality_max = 90.0
+temper_min = 50.0
+temper_max = 90.0
+obedience_min = 50.0
+rarity = 2
+spawn_weight = 8.0
+color = Color(0.2, 0.2, 0.2, 1)
+encyclopedia_text = "纯血马是全世界速度最快的马种之一，起源于英国。体型高大，肌肉发达，短距离冲刺能力无出其右。纯血马性格极为敏感，需要骑手有超凡的耐心和技巧。"

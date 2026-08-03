@@ -1,0 +1,224 @@
+extends CharacterBody2D
+
+signal landed_on_horse(horse)
+signal player_fell
+
+const VERTICAL_SPEED = 600.0
+const JUMP_DURATION = 2.0
+const WINDUP_DURATION = 1.0
+
+var on_horse = null
+var jumping = false
+var _jump_windup = false
+var jump_velocity = Vector2.ZERO
+var _jump_timer = 0.0
+var _windup_timer = 0.0
+
+var _touch_start = Vector2.ZERO
+var _touch_active = false
+var _touch_index = -1
+var _min_swipe = 30.0
+var _riding_input_dir = 0.0
+var _anim_scales = {}
+var _jumped_from = null
+
+@onready var _sprite: AnimatedSprite2D = $AnimatedSprite2D
+
+
+func _load_frame_sequence(frames: SpriteFrames, anim_name: String, dir_path: String, speed: float, target_size: Vector2 = Vector2.ZERO) -> Vector2:
+	frames.add_animation(anim_name)
+	frames.set_animation_speed(anim_name, speed)
+	var i = 1
+	var first_size = Vector2.ZERO
+	while ResourceLoader.exists(dir_path + "/" + str(i) + ".png"):
+		var tex = load(dir_path + "/" + str(i) + ".png")
+		if tex == null:
+			break
+		if first_size == Vector2.ZERO:
+			first_size = tex.get_size()
+		frames.add_frame(anim_name, tex)
+		i += 1
+	if target_size != Vector2.ZERO and first_size.x > 0 and first_size.y > 0:
+		_anim_scales[anim_name] = min(target_size.x / first_size.x, target_size.y / first_size.y)
+	return first_size
+
+
+func _setup_animations():
+	var frames = SpriteFrames.new()
+	_load_frame_sequence(frames, "ride", "res://Art_Resource/Rider/rider_ride/frames", 10.0, Vector2(90, 120))
+	_load_frame_sequence(frames, "jump", "res://Art_Resource/Rider/rider_jump/frames", 15.0, Vector2(9999, 120))
+	_load_frame_sequence(frames, "fall", "res://Art_Resource/Rider/rider_fall/frames", 10.0, Vector2(9999, 120))
+	_sprite.sprite_frames = frames
+	_play_anim("ride")
+
+
+func _play_anim(anim_name: String):
+	_sprite.play(anim_name)
+	if _anim_scales.has(anim_name):
+		_sprite.scale = Vector2(_anim_scales[anim_name], _anim_scales[anim_name])
+
+
+func _ready():
+	add_to_group("player")
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	var col = $CollisionShape
+	if col.shape == null:
+		var rect = RectangleShape2D.new()
+		rect.size = Vector2(60, 120)
+		col.shape = rect
+	_setup_animations()
+
+
+func _physics_process(delta):
+	if on_horse and not jumping:
+		if not is_instance_valid(on_horse) or on_horse.is_queued_for_deletion():
+			on_horse = null
+			_play_anim("fall")
+			return
+		if on_horse.is_exhausted():
+			jump_off(Vector2.UP * 400)
+		else:
+			_update_riding(delta)
+			global_position = on_horse.global_position + Vector2(0, -30)
+		_play_anim("ride")
+		return
+
+	if jumping:
+		if _jump_windup:
+			_windup_timer -= delta
+			if _windup_timer > 0:
+				if _jumped_from and is_instance_valid(_jumped_from):
+					global_position = _jumped_from.global_position + Vector2(0, -30)
+				_play_anim("jump")
+				return
+			_jump_windup = false
+			velocity = jump_velocity
+
+		velocity = jump_velocity
+		move_and_slide()
+		_jump_timer -= delta
+
+		for i in get_slide_collision_count():
+			var col = get_slide_collision(i)
+			var collider = col.get_collider()
+			if collider is GameHorse:
+				_on_horse_collision(collider)
+				return
+
+		if _jump_timer <= 0.0:
+			jumping = false
+		_play_anim("jump")
+		return
+
+	# not on horse, not jumping -> dead
+	_play_anim("fall")
+	player_fell.emit()
+
+
+func _update_riding(_delta):
+	if on_horse.is_crazy:
+		return
+	var vy = _riding_input_dir * VERTICAL_SPEED
+	if Input.is_key_pressed(KEY_UP) or Input.is_key_pressed(KEY_W):
+		vy = -VERTICAL_SPEED
+	elif Input.is_key_pressed(KEY_DOWN) or Input.is_key_pressed(KEY_S):
+		vy = VERTICAL_SPEED
+
+	on_horse.velocity.y = vy
+	if not on_horse.is_crazy:
+		on_horse.velocity.x = on_horse.horse_data.get_actual_speed()
+
+
+func _input(event):
+	if event is InputEventScreenTouch:
+		if event.pressed:
+			if _touch_index < 0:
+				_touch_start = event.position
+				_touch_active = true
+				_touch_index = event.index
+		else:
+			if event.index == _touch_index:
+				if _touch_active:
+					var swipe = event.position - _touch_start
+					if swipe.length() > _min_swipe:
+						_try_jump(swipe.normalized())
+				_touch_active = false
+				_touch_index = -1
+				_riding_input_dir = 0.0
+
+	if event is InputEventScreenDrag:
+		if event.index == _touch_index and on_horse and not jumping:
+			var d = event.relative
+			if abs(d.y) > 5:
+				_riding_input_dir = sign(d.y)
+
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		var mouse_world = get_canvas_transform().affine_inverse() * event.position
+		var dir = (mouse_world - global_position).normalized()
+		_try_jump(dir)
+
+
+func _try_jump(direction):
+	if on_horse == null:
+		return
+	if not is_instance_valid(on_horse) or on_horse.is_queued_for_deletion():
+		return
+	if on_horse.is_exhausted():
+		return
+	var speed = abs(on_horse.velocity.x) + get_node("/root/GameManager").jump_power * 200.0
+	jump_off(direction.normalized() * speed)
+
+
+func jump_off(vel):
+	if on_horse and is_instance_valid(on_horse):
+		var gm = get_node("/root/GameManager")
+		var hdata = on_horse.horse_data
+		if hdata and not hdata.is_obedient(gm.personality_pref, gm.temper_pref, gm.tame_ability):
+			on_horse.start_crazy()
+		on_horse.is_ridden = true
+		on_horse.velocity = Vector2.ZERO
+		on_horse.set_speed_mul(0.5)
+		_jumped_from = on_horse
+	on_horse = null
+	jumping = true
+	_jump_windup = true
+	jump_velocity = vel
+	_jump_timer = JUMP_DURATION
+	_windup_timer = WINDUP_DURATION
+	$CollisionShape.disabled = false
+
+
+func mount(horse):
+	if horse == null:
+		return
+	_jumped_from = null
+	jumping = false
+	_jump_windup = false
+	jump_velocity = Vector2.ZERO
+	on_horse = horse
+	horse.set_speed_mul(1.0)
+	horse.reset_stamina_timer()
+	global_position = horse.global_position + Vector2(0, -30)
+	var gm = get_node("/root/GameManager")
+	var obedient = horse.horse_data.is_obedient(gm.personality_pref, gm.temper_pref, gm.tame_ability)
+	if not obedient or horse.is_ridden:
+		horse.start_crazy()
+	gm.add_ridden_horse(horse.horse_data)
+	$CollisionShape.disabled = true
+	landed_on_horse.emit(horse)
+
+
+func _on_horse_collision(collider):
+	if collider == on_horse:
+		return
+	if collider == _jumped_from:
+		return
+	if not is_instance_valid(collider):
+		return
+	if collider.horse_data and collider.horse_data.is_exhausted:
+		return
+	mount(collider)
+
+
+func is_on_horse():
+	return on_horse != null and is_instance_valid(on_horse) and not on_horse.is_queued_for_deletion()

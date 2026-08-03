@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="HorseBreed" load_steps=2 format=3 uid="uid://breed_ferghana"]
+
+[ext_resource type="Script" path="res://scripts/resources/horse_breed.gd" id="1_breed"]
+
+[resource]
+script = ExtResource("1_breed")
+breed_name = "汗血宝马"
+base_speed = 65.0
+base_stamina = 30.0
+personality_min = 80.0
+personality_max = 100.0
+temper_min = 80.0
+temper_max = 100.0
+obedience_min = 70.0
+rarity = 2
+spawn_weight = 8.0
+color = Color(0.855, 0.647, 0.125, 1)
+encyclopedia_text = "汗血宝马古称大宛马，原产于中亚费尔干纳盆地。传说此马奔跑后汗水呈红色，故得此名。汗血宝马体态优美，耐力与速度俱佳，是汉武帝梦寐以求的天马。"

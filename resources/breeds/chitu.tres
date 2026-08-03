@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="HorseBreed" load_steps=2 format=3 uid="uid://breed_chitu"]
+
+[ext_resource type="Script" path="res://scripts/resources/horse_breed.gd" id="1_breed"]
+
+[resource]
+script = ExtResource("1_breed")
+breed_name = "赤兔马"
+base_speed = 100.0
+base_stamina = 30.0
+personality_min = 90.0
+personality_max = 100.0
+temper_min = 0.0
+temper_max = 10.0
+obedience_min = 99.0
+rarity = 3
+spawn_weight = 2.0
+color = Color(1, 0, 0, 1)
+encyclopedia_text = "赤兔马是三国第一名马，人中吕布，马中赤兔。通体赤红如火，日行千里，夜行八百。赤兔马先随吕布纵横天下，后归关羽，青龙偃月刀下威震华夏。其速度与爆发力在万马之中无可匹敌。"

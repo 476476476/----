@@ -1,0 +1,49 @@
+extends Control
+
+@onready var horse_list = $VBox/HorseList
+@onready var info_label = $VBox/InfoLabel
+
+var owned_horses = []
+
+func _ready():
+	_refresh_list()
+
+func _refresh_list():
+	for child in horse_list.get_children():
+		child.queue_free()
+	owned_horses.clear()
+	var gm = get_node("/root/GameManager")
+	for i in range(gm.stables.size()):
+		var horse = gm.stables[i]
+		if horse != null:
+			owned_horses.append({"index": i, "horse": horse})
+			var btn = Button.new()
+			btn.text = "%s [%s] 速度:%.0f 耐力:%.0f" % [
+				horse.horse_name, horse.breed.breed_name,
+				horse.get_actual_speed(), horse.get_actual_stamina()
+			]
+			btn.pressed.connect(_on_horse_selected.bind(i))
+			horse_list.add_child(btn)
+	var random_btn = Button.new()
+	random_btn.text = "不使用自己的马（随机蒙古马）"
+	random_btn.pressed.connect(_on_random_selected)
+	horse_list.add_child(random_btn)
+	var back_btn = Button.new()
+	back_btn.text = "返回"
+	back_btn.pressed.connect(_on_back_pressed)
+	horse_list.add_child(back_btn)
+
+func _on_horse_selected(index):
+	var gm = get_node("/root/GameManager")
+	gm.selected_horse_index = index
+	if index < 0 or index >= gm.stables.size() or gm.stables[index] == null:
+		return
+	info_label.text = "已选择: %s" % gm.stables[index].horse_name
+	get_tree().change_scene_to_file("res://scenes/game_scene.tscn")
+
+func _on_random_selected():
+	get_node("/root/GameManager").selected_horse_index = -1
+	get_tree().change_scene_to_file("res://scenes/game_scene.tscn")
+
+func _on_back_pressed():
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

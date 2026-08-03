@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="HorseBreed" load_steps=2 format=3 uid="uid://breed_dilu"]
+
+[ext_resource type="Script" path="res://scripts/resources/horse_breed.gd" id="1_breed"]
+
+[resource]
+script = ExtResource("1_breed")
+breed_name = "的卢"
+base_speed = 45.0
+base_stamina = 12.0
+personality_min = 10.0
+personality_max = 90.0
+temper_min = 10.0
+temper_max = 90.0
+obedience_min = 10.0
+rarity = 0
+spawn_weight = 75.0
+color = Color(0.85, 0.85, 0.85, 1)
+encyclopedia_text = "的卢是三国时期刘备的坐骑，以神骏著称。相传的卢马曾驮着刘备跃过檀溪，救主于危难之中。此马通体雪白，奔跑极为迅速，但因体质偏弱，耐力稍逊。"

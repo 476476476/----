@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="HorseBreed" load_steps=2 format=3 uid="uid://breed_jueying"]
+
+[ext_resource type="Script" path="res://scripts/resources/horse_breed.gd" id="1_breed"]
+
+[resource]
+script = ExtResource("1_breed")
+breed_name = "绝影"
+base_speed = 80.0
+base_stamina = 15.0
+personality_min = 0.0
+personality_max = 40.0
+temper_min = 0.0
+temper_max = 40.0
+obedience_min = 50.0
+rarity = 2
+spawn_weight = 8.0
+color = Color(0.2, 0.267, 0.4, 1)
+encyclopedia_text = "绝影是三国时期一代枭雄曹操的坐骑，以速度闻名天下，据说快到连影子都追不上。绝影马通体棕黑，身形矫健，爆发力极强，是速度型骑手的终极追求。"

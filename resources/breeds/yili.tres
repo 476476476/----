@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="HorseBreed" load_steps=2 format=3 uid="uid://breed_yili"]
+
+[ext_resource type="Script" path="res://scripts/resources/horse_breed.gd" id="1_breed"]
+
+[resource]
+script = ExtResource("1_breed")
+breed_name = "伊犁马"
+base_speed = 55.0
+base_stamina = 15.0
+personality_min = 20.0
+personality_max = 40.0
+temper_min = 20.0
+temper_max = 50.0
+obedience_min = 30.0
+rarity = 1
+spawn_weight = 15.0
+color = Color(0.824, 0.706, 0.549, 1)
+encyclopedia_text = "伊犁马产自新疆伊犁河谷，是哈萨克族培育的优秀马种。体型中等，速度出众，善于长途奔跑。伊犁马性格活泼，适合有一定骑术基础的骑手驾驭。"

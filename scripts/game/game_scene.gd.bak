@@ -1,0 +1,257 @@
+extends Node2D
+
+@onready var player = $Player
+@onready var horses_container = $Horses
+@onready var obstacles_container = $Obstacles
+@onready var camera = $Camera2D
+@onready var hud = $GameHUD
+@onready var game_over_panel = $GameOverPanel
+
+var game_running = false
+var distance_traveled = 0.0
+
+var _spawn_timer = 0.0
+var _obstacle_timer = 0.0
+var _initialized = false
+var _viewport_size = Vector2(800, 600)
+
+const HORSE_SCRIPT = preload("res://scripts/game/horse.gd")
+const SPAWN_INTERVAL = 2.0
+const OBSTACLE_INTERVAL = 3.0
+const MAX_HORSES = 6
+
+func _ready():
+	game_over_panel.hide()
+	add_to_group("game_scene")
+
+	var window = get_window()
+	if window != null and window.size.x >= 100:
+		_viewport_size = window.size
+	else:
+		_viewport_size = Vector2(800, 600)
+
+	camera.enabled = true
+	camera.position_smoothing_enabled = false
+
+	player.global_position = Vector2(_viewport_size.x * 0.3, _viewport_size.y * 0.5)
+	camera.global_position = player.global_position
+	camera.global_position.x += _viewport_size.x * 0.2
+
+func _physics_process(delta):
+	if not _initialized:
+		_init_game()
+
+	if not game_running:
+		return
+
+	var prev_x = camera.global_position.x
+	_update_camera()
+	distance_traveled += camera.global_position.x - prev_x
+
+	_spawn_timer -= delta
+	if _spawn_timer <= 0.0:
+		_spawn_timer = SPAWN_INTERVAL + randf_range(-0.5, 0.5)
+		_try_spawn_horses()
+
+	_obstacle_timer -= delta
+	if _obstacle_timer <= 0.0:
+		_obstacle_timer = OBSTACLE_INTERVAL + randf_range(-0.5, 0.5)
+		_spawn_obstacle()
+
+	_cleanup_offscreen()
+	_update_walls()
+
+	if player.is_on_horse():
+		var y = player.on_horse.global_position.y
+		if y < 80 or y > _viewport_size.y - 120:
+			_game_over("撞到墙壁")
+	elif not player.jumping:
+		
+		_game_over("无马可骑")
+
+func _init_game():
+	_start_game()
+	_initialized = true
+
+func _update_camera():
+	var target = player.global_position
+	target.x += _viewport_size.x * 0.2
+	camera.global_position = target
+
+func _update_walls():
+	var cam_x = camera.global_position.x
+	for child in get_children():
+		if child.name == "TopWall":
+			child.global_position.x = cam_x
+		elif child.name == "BottomWall":
+			child.global_position.x = cam_x
+
+func _start_game():
+	get_node("/root/GameManager").start_new_game()
+	game_running = true
+	_spawn_walls()
+	_spawn_initial_horse()
+	player.landed_on_horse.connect(_on_player_landed)
+	player.player_fell.connect(func(): _game_over("无马可骑"))
+
+func _spawn_walls():
+	var w = _viewport_size.x * 1.5
+	var h = 80.0
+
+	var top = StaticBody2D.new()
+	top.name = "TopWall"
+	var ts = CollisionShape2D.new()
+	var top_rect = RectangleShape2D.new()
+	top_rect.size = Vector2(w, h)
+	ts.shape = top_rect
+	top.add_child(ts)
+	top.global_position = Vector2(0, 0)
+	add_child(top)
+
+	var bot = StaticBody2D.new()
+	bot.name = "BottomWall"
+	var bcs = CollisionShape2D.new()
+	var br = RectangleShape2D.new()
+	br.size = Vector2(w, h)
+	bcs.shape = br
+	bot.add_child(bcs)
+	bot.global_position = Vector2(0, _viewport_size.y - h)
+	add_child(bot)
+
+func _spawn_initial_horse():
+	var gm = get_node("/root/GameManager")
+	var horse_data = null
+	if gm.selected_horse_index >= 0 and gm.selected_horse_index < gm.stables.size():
+		var owned = gm.stables[gm.selected_horse_index]
+		if owned != null:
+			horse_data = owned.clone()
+	if horse_data == null:
+		horse_data = _create_random_horse()
+		horse_data.is_player_owned = true
+	var pos = Vector2(_viewport_size.x * 0.3, _viewport_size.y * 0.5)
+	var horse_node = _spawn_horse(horse_data, pos)
+	player.mount(horse_node)
+
+func _try_spawn_horses():
+	var current_count = horses_container.get_child_count()
+	var to_spawn = randi_range(1, 2)
+	for _i in range(to_spawn):
+		if current_count >= MAX_HORSES:
+			break
+		var data = _create_random_horse()
+		var edge = randf()
+		var y_pos = randf_range(80, _viewport_size.y - 80)
+		var pos = Vector2.ZERO
+		if edge < 0.6:
+			pos = Vector2(camera.global_position.x + _viewport_size.x + randf_range(100, 400), y_pos)
+		else:
+			pos = Vector2(camera.global_position.x - randf_range(100, 300), y_pos)
+		_spawn_horse(data, pos)
+		current_count += 1
+
+func _create_random_horse():
+	var roll = randf() * 100.0
+	var breed = null
+	if roll < 75.0:
+		breed = load("res://resources/breeds/mongolian.tres")
+	elif roll < 90.0:
+		breed = load("res://resources/breeds/yili.tres")
+	elif roll < 98.0:
+		breed = load("res://resources/breeds/thoroughbred.tres")
+	else:
+		breed = load("res://resources/breeds/ferghana.tres")
+
+	var data = HorseData.new()
+	data.breed = breed
+	data.horse_name = breed.breed_name
+	data.speed_mod = randi_range(-10, 10)
+	data.stamina_mod = randi_range(-5, 5)
+	data.personality_mod = randi_range(-10, 10)
+	data.temper_mod = randi_range(-10, 10)
+	data.obedience_mod = randi_range(-10, 10)
+	data.current_stamina = data.get_actual_stamina()
+	return data
+
+func _spawn_horse(data, pos):
+	var horse = HORSE_SCRIPT.new()
+	horse.setup(data, true)
+	horse.global_position = pos
+
+	var area = Area2D.new()
+	area.name = "RideArea"
+	var area_cs = CollisionShape2D.new()
+	var area_rect = RectangleShape2D.new()
+	area_rect.size = Vector2(160, 120)
+	area_cs.shape = area_rect
+	area.add_child(area_cs)
+	horse.add_child(area)
+
+	var body_cs = CollisionShape2D.new()
+	var body_rect = RectangleShape2D.new()
+	body_rect.size = Vector2(120, 80)
+	body_cs.shape = body_rect
+	horse.add_child(body_cs)
+
+	horse.died.connect(_on_horse_died.bind(horse))
+	horse.exhausted.connect(_on_horse_exhausted.bind(horse))
+
+	horses_container.add_child(horse)
+	return horse
+
+func _spawn_obstacle():
+	var obs = Area2D.new()
+	obs.name = "Obstacle"
+	var sprite = Sprite2D.new()
+	var tex_path = "res://Art_Resource/Obstacles/rock.png" if randf() < 0.5 else "res://Art_Resource/Obstacles/fence.png"
+	sprite.texture = load(tex_path)
+	sprite.scale = Vector2(0.03, 0.03)
+	sprite.name = "Sprite"
+	obs.add_child(sprite)
+	var shape = CollisionShape2D.new()
+	var rect = RectangleShape2D.new()
+	rect.size = Vector2(60, 60)
+	shape.shape = rect
+	obs.add_child(shape)
+	var x = player.global_position.x + _viewport_size.x * 0.5 + randf_range(100, 300)
+	var y = randf_range(80, _viewport_size.y - 80)
+	obs.global_position = Vector2(x, y)
+	obs.body_entered.connect(_on_obstacle_hit)
+	obstacles_container.add_child(obs)
+
+func _cleanup_offscreen():
+	var cam_x = camera.global_position.x
+	var w = _viewport_size.x
+	for horse in horses_container.get_children():
+		if horse.global_position.x < cam_x - w - 200 or horse.global_position.x > cam_x + w + 400:
+			horse.queue_free()
+	for obs in obstacles_container.get_children():
+		if obs.global_position.x < cam_x - w - 200:
+			obs.queue_free()
+
+func _on_player_landed(_horse):
+	pass
+
+func _on_horse_died(horse):
+	if player.on_horse == horse:
+		player.jump_off(Vector2.UP * 400)
+	horse.queue_free()
+
+func _on_horse_exhausted(horse):
+	if player.on_horse == horse and not player.jumping:
+		_game_over("马匹力竭")
+
+func _on_obstacle_hit(body):
+	if body == player:
+		_game_over("撞到障碍物")
+	elif body is GameHorse and player.on_horse == body:
+		_game_over("撞到障碍物")
+
+func _game_over(reason):
+	if not game_running:
+		return
+	game_running = false
+	var gm = get_node("/root/GameManager")
+	var reward = int(distance_traveled / 100.0) + gm.current_horses_ridden * 5
+	gm.add_gold(reward)
+	get_node("/root/SaveSystem").save_game()
+	game_over_panel.show_game_over(distance_traveled, gm.current_horses_ridden, reward, reason)

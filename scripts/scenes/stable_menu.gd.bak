@@ -1,0 +1,71 @@
+extends Control
+
+@onready var slots_container = $VBox/Slots
+@onready var detail_panel = $VBox/DetailPanel
+@onready var detail_label = $VBox/DetailPanel/DetailLabel
+@onready var rename_edit = $VBox/DetailPanel/RenameEdit
+@onready var status_label = $VBox/StatusLabel
+
+var selected_slot = -1
+
+func _ready():
+	detail_panel.hide()
+	$VBox/DetailPanel/RenameButton.pressed.connect(_on_rename_pressed)
+	$VBox/BackButton.pressed.connect(_on_back_pressed)
+	_refresh_slots()
+
+func _refresh_slots():
+	for child in slots_container.get_children():
+		child.queue_free()
+	var gm = get_node("/root/GameManager")
+	for i in range(gm.stables.size()):
+		var horse = gm.stables[i]
+		var slot_btn = Button.new()
+		if horse != null:
+			slot_btn.text = "%s\n[%s]" % [horse.horse_name, horse.breed.breed_name]
+		else:
+			slot_btn.text = "空槽位"
+		slot_btn.pressed.connect(_on_slot_pressed.bind(i))
+		slots_container.add_child(slot_btn)
+
+func _on_slot_pressed(index):
+	selected_slot = index
+	var gm = get_node("/root/GameManager")
+	if index < gm.stables.size() and gm.stables[index] != null:
+		var h = gm.stables[index]
+		detail_label.text = """名称: %s
+品种: %s (%s)
+速度: %.0f m/s
+耐力: %.0f s
+性格值: %.0f
+脾气值: %.0f
+顺从值: %.0f""" % [
+			h.horse_name, h.breed.breed_name, h.breed.get_rarity_string(),
+			h.get_actual_speed(), h.get_actual_stamina(),
+			h.personality_mod, h.temper_mod, h.obedience_mod
+		]
+		rename_edit.text = h.horse_name
+		detail_panel.show()
+	else:
+		detail_label.text = "空槽位 - 游戏结束后可将骑过的马放入"
+		rename_edit.text = ""
+		detail_panel.show()
+
+func _on_rename_pressed():
+	if selected_slot < 0:
+		return
+	var gm = get_node("/root/GameManager")
+	var horse = gm.stables[selected_slot]
+	if horse == null:
+		return
+	var new_name = rename_edit.text.strip_edges()
+	if new_name.is_empty():
+		return
+	horse.horse_name = new_name
+	status_label.text = "已改名: %s" % new_name
+	get_node("/root/SaveSystem").save_game()
+	_refresh_slots()
+	detail_panel.hide()
+
+func _on_back_pressed():
+	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="HorseBreed" load_steps=2 format=3 uid="uid://breed_wuzhui"]
+
+[ext_resource type="Script" path="res://scripts/resources/horse_breed.gd" id="1_breed"]
+
+[resource]
+script = ExtResource("1_breed")
+breed_name = "乌骓"
+base_speed = 95.0
+base_stamina = 28.0
+personality_min = 80.0
+personality_max = 100.0
+temper_min = 90.0
+temper_max = 100.0
+obedience_min = 99.0
+rarity = 3
+spawn_weight = 2.0
+color = Color(0.05, 0.05, 0.05, 1)
+encyclopedia_text = "乌骓是西楚霸王项羽的坐骑，通体乌黑如墨，无一杂毛。乌骓马伴随项羽南征北战，垓下之围后投江殉主，忠诚刚烈。此马速度仅次于赤兔，极难驯服。"

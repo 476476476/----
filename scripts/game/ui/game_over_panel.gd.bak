@@ -1,0 +1,298 @@
+extends CanvasLayer
+
+var _ridden_horses = []
+var _distance = 0.0
+var _reward = 0
+var _reason = ""
+var _built = false
+
+var _bg: ColorRect
+var _vbox: VBoxContainer
+var _current_horse_index = 0
+var _pending_horse_data = null
+
+
+func show_game_over(distance, ridden, reward, reason):
+	_distance = distance
+	_reward = reward
+	_ridden_horses = get_node("/root/GameManager").current_ridden_horses.duplicate()
+	_reason = reason
+	show()
+	_build()
+
+
+func _build():
+	if _built:
+		return
+	_built = true
+
+	var vs = get_window().size
+	_bg = ColorRect.new()
+	_bg.color = Color(0.1, 0.1, 0.15, 0.92)
+	_bg.position = Vector2(vs.x * 0.1, vs.y * 0.1)
+	_bg.size = Vector2(vs.x * 0.8, vs.y * 0.8)
+	add_child(_bg)
+
+	_vbox = VBoxContainer.new()
+	_vbox.position = _bg.position + Vector2(20, 20)
+	_vbox.size = _bg.size - Vector2(40, 40)
+	_vbox.add_theme_constant_override("separation", 12)
+	add_child(_vbox)
+
+	_show_info()
+
+
+func _clear_vbox():
+	for child in _vbox.get_children():
+		child.queue_free()
+
+
+func _show_info():
+	_clear_vbox()
+
+	var title = Label.new()
+	title.text = "游戏结束"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 32)
+	_vbox.add_child(title)
+
+	var info = Label.new()
+	info.text = "原因: %s\n距离: %.0f m\n骑马: %d 匹\n金币: +%d" % [_reason, _distance, _ridden_horses.size(), _reward]
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	info.add_theme_font_size_override("font_size", 20)
+	_vbox.add_child(info)
+
+	for horse in _ridden_horses:
+		var hl = Label.new()
+		var owned = " (已有)" if horse.is_player_owned else " (可捕获)"
+		hl.text = "  %s [%s]%s" % [horse.horse_name, horse.breed.breed_name, owned]
+		hl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		hl.add_theme_font_size_override("font_size", 16)
+		_vbox.add_child(hl)
+
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 10)
+	_vbox.add_child(spacer)
+
+	var wild_count = 0
+	for h in _ridden_horses:
+		if not h.is_player_owned:
+			wild_count += 1
+
+	if wild_count > 0:
+		var prompt = Label.new()
+		prompt.text = "有 %d 匹马可以收入马厩" % wild_count
+		prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		prompt.add_theme_font_size_override("font_size", 18)
+		_vbox.add_child(prompt)
+
+		var hbox = HBoxContainer.new()
+		hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+		hbox.add_theme_constant_override("separation", 20)
+
+		var yes_btn = Button.new()
+		yes_btn.text = "逐一确认"
+		yes_btn.add_theme_font_size_override("font_size", 18)
+		yes_btn.pressed.connect(_start_horse_confirmations)
+		hbox.add_child(yes_btn)
+
+		var skip_btn = Button.new()
+		skip_btn.text = "全部跳过"
+		skip_btn.add_theme_font_size_override("font_size", 18)
+		skip_btn.pressed.connect(_show_final_buttons)
+		hbox.add_child(skip_btn)
+
+		_vbox.add_child(hbox)
+	else:
+		_show_final_buttons()
+
+
+func _start_horse_confirmations():
+	_current_horse_index = 0
+	_show_next_horse_confirmation()
+
+
+func _show_next_horse_confirmation():
+	while _current_horse_index < _ridden_horses.size():
+		if not _ridden_horses[_current_horse_index].is_player_owned:
+			break
+		_current_horse_index += 1
+
+	if _current_horse_index >= _ridden_horses.size():
+		_show_final_buttons()
+		return
+
+	var horse = _ridden_horses[_current_horse_index]
+	_clear_vbox()
+
+	var title = Label.new()
+	title.text = "收入马厩"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 28)
+	_vbox.add_child(title)
+
+	var info = Label.new()
+	info.text = "是否将 %s [%s] 收入马厩？\n速度: %.0f  耐力: %.0f" % [horse.horse_name, horse.breed.breed_name, horse.get_actual_speed(), horse.get_actual_stamina()]
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	info.add_theme_font_size_override("font_size", 20)
+	_vbox.add_child(info)
+
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 10)
+	_vbox.add_child(spacer)
+
+	var hbox = HBoxContainer.new()
+	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
+	hbox.add_theme_constant_override("separation", 20)
+
+	var h_data = horse
+	var yes_btn = Button.new()
+	yes_btn.text = "收入"
+	yes_btn.add_theme_font_size_override("font_size", 18)
+	yes_btn.pressed.connect(func(): _try_add_horse(h_data))
+	hbox.add_child(yes_btn)
+
+	var no_btn = Button.new()
+	no_btn.text = "跳过"
+	no_btn.add_theme_font_size_override("font_size", 18)
+	no_btn.pressed.connect(func():
+		_current_horse_index += 1
+		_show_next_horse_confirmation()
+	)
+	hbox.add_child(no_btn)
+
+	_vbox.add_child(hbox)
+
+
+func _try_add_horse(horse_data):
+	var gm = get_node("/root/GameManager")
+	if gm.add_horse_to_stable(horse_data):
+		_show_add_result(horse_data, "")
+	else:
+		_pending_horse_data = horse_data
+		_show_replace_dialog()
+
+
+func _show_add_result(horse_data, replaced_name):
+	_clear_vbox()
+
+	var title = Label.new()
+	title.text = "收入马厩"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 28)
+	_vbox.add_child(title)
+
+	var msg = ""
+	if not replaced_name.is_empty():
+		msg = "%s [%s] 已收入\n替换了 %s" % [horse_data.horse_name, horse_data.breed.breed_name, replaced_name]
+	else:
+		msg = "%s [%s] 已收入马厩" % [horse_data.horse_name, horse_data.breed.breed_name]
+
+	var info = Label.new()
+	info.text = msg
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	info.add_theme_font_size_override("font_size", 20)
+	_vbox.add_child(info)
+
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 10)
+	_vbox.add_child(spacer)
+
+	var ok_btn = Button.new()
+	ok_btn.text = "继续"
+	ok_btn.add_theme_font_size_override("font_size", 18)
+	ok_btn.pressed.connect(func():
+		_current_horse_index += 1
+		_show_next_horse_confirmation()
+	)
+	_vbox.add_child(ok_btn)
+
+
+func _show_replace_dialog():
+	_clear_vbox()
+
+	var title = Label.new()
+	title.text = "马厩已满"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 28)
+	_vbox.add_child(title)
+
+	var prompt = Label.new()
+	prompt.text = "选择要替换的马："
+	prompt.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	prompt.add_theme_font_size_override("font_size", 18)
+	_vbox.add_child(prompt)
+
+	var gm = get_node("/root/GameManager")
+	for i in range(gm.stables.size()):
+		var horse = gm.stables[i]
+		if horse == null:
+			continue
+		var btn = Button.new()
+		btn.text = "%s [%s]  速度:%.0f  耐力:%.0f" % [horse.horse_name, horse.breed.breed_name, horse.get_actual_speed(), horse.get_actual_stamina()]
+		btn.add_theme_font_size_override("font_size", 14)
+		var idx = i
+		var old_name = horse.horse_name
+		btn.pressed.connect(func():
+			var gm2 = get_node("/root/GameManager")
+			gm2.replace_horse_in_stable(idx, _pending_horse_data)
+			_show_add_result(_pending_horse_data, old_name)
+		)
+		_vbox.add_child(btn)
+
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 10)
+	_vbox.add_child(spacer)
+
+	var cancel_btn = Button.new()
+	cancel_btn.text = "取消"
+	cancel_btn.add_theme_font_size_override("font_size", 16)
+	cancel_btn.pressed.connect(func():
+		_current_horse_index += 1
+		_show_next_horse_confirmation()
+	)
+	_vbox.add_child(cancel_btn)
+
+
+func _show_final_buttons():
+	_clear_vbox()
+
+	var title = Label.new()
+	title.text = "游戏结束"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 32)
+	_vbox.add_child(title)
+
+	var info = Label.new()
+	info.text = "原因: %s\n距离: %.0f m\n骑马: %d 匹\n金币: +%d" % [_reason, _distance, _ridden_horses.size(), _reward]
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	info.add_theme_font_size_override("font_size", 20)
+	_vbox.add_child(info)
+
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 20)
+	_vbox.add_child(spacer)
+
+	for horse in _ridden_horses:
+		if not horse.is_player_owned:
+			var hl = Label.new()
+			hl.text = "  %s [%s] (未收入)" % [horse.horse_name, horse.breed.breed_name]
+			hl.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			hl.add_theme_font_size_override("font_size", 14)
+			_vbox.add_child(hl)
+
+	var spacer2 = Control.new()
+	spacer2.custom_minimum_size = Vector2(0, 10)
+	_vbox.add_child(spacer2)
+
+	var restart_btn = Button.new()
+	restart_btn.text = "再来一局"
+	restart_btn.add_theme_font_size_override("font_size", 22)
+	restart_btn.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/game_scene.tscn"))
+	_vbox.add_child(restart_btn)
+
+	var menu_btn = Button.new()
+	menu_btn.text = "返回主页"
+	menu_btn.add_theme_font_size_override("font_size", 22)
+	menu_btn.pressed.connect(func(): get_tree().change_scene_to_file("res://scenes/main_menu.tscn"))
+	_vbox.add_child(menu_btn)

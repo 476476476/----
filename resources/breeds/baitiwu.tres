@@ -1,0 +1,18 @@
+[gd_resource type="Resource" script_class="HorseBreed" load_steps=2 format=3 uid="uid://breed_baitiwu"]
+
+[ext_resource type="Script" path="res://scripts/resources/horse_breed.gd" id="1_breed"]
+
+[resource]
+script = ExtResource("1_breed")
+breed_name = "白蹄乌"
+base_speed = 50.0
+base_stamina = 25.0
+personality_min = 30.0
+personality_max = 100.0
+temper_min = 30.0
+temper_max = 100.0
+obedience_min = 30.0
+rarity = 1
+spawn_weight = 15.0
+color = Color(0.1, 0.1, 0.1, 1)
+encyclopedia_text = "白蹄乌是西域名马，通体乌黑，唯有四蹄雪白，故名白蹄乌。此马体态优雅，奔跑迅捷，但性情刚烈，只有经验丰富的骑手才能驾驭。"
