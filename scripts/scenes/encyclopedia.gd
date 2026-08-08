@@ -86,7 +86,8 @@ func _build_cards():
 		child.queue_free()
 
 	var unlocked_count = 0
-	for path in BREED_PATHS:
+	var all_paths = BREED_PATHS + BreedRegistry.get_all_breed_paths()
+	for path in all_paths:
 		var breed = load(path)
 		if breed == null:
 			continue
@@ -123,7 +124,11 @@ func _build_cards():
 			tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			tex.custom_minimum_size = Vector2(0, 100)
-			var prefix = BREED_FILE_MAP.get(breed.breed_name, "mongolian")
+			var prefix = BREED_FILE_MAP.get(breed.breed_name, "")
+			if prefix == "":
+				prefix = BreedRegistry.get_prefix(breed.breed_name)
+			if prefix == "":
+				prefix = "mongolian"
 			var frame_path = "res://Art_Resource/Horses/%s_run/frames/1.png" % prefix
 			if ResourceLoader.exists(frame_path):
 				tex.texture = load(frame_path)
@@ -169,7 +174,7 @@ func _build_cards():
 
 		cards_container.add_child(card)
 
-	unlock_hint.text = "已解锁 %d / %d 种" % [unlocked_count, BREED_PATHS.size()]
+	unlock_hint.text = "已解锁 %d / %d 种" % [unlocked_count, all_paths.size()]
 
 func _show_detail(breed):
 	if _detail_popup and is_instance_valid(_detail_popup):
@@ -227,7 +232,11 @@ func _show_detail(breed):
 	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	tex.custom_minimum_size = Vector2(0, 100)
-	var prefix = BREED_FILE_MAP.get(breed.breed_name, "mongolian")
+	var prefix = BREED_FILE_MAP.get(breed.breed_name, "")
+	if prefix == "":
+		prefix = BreedRegistry.get_prefix(breed.breed_name)
+	if prefix == "":
+		prefix = "mongolian"
 	var frame_path = "res://Art_Resource/Horses/%s_run/frames/1.png" % prefix
 	if ResourceLoader.exists(frame_path):
 		tex.texture = load(frame_path)

@@ -62,7 +62,11 @@ func _load_frame_sequence(frames: SpriteFrames, anim_name: String, dir_path: Str
 
 
 func _setup_sprite():
-	_breed_prefix = BREED_FILE_MAP.get(horse_data.breed.breed_name, "mongolian")
+	_breed_prefix = BREED_FILE_MAP.get(horse_data.breed.breed_name, "")
+	if _breed_prefix == "":
+		_breed_prefix = BreedRegistry.get_prefix(horse_data.breed.breed_name)
+	if _breed_prefix == "":
+		_breed_prefix = "mongolian"
 
 	var frames = SpriteFrames.new()
 	var base = "res://Art_Resource/Horses/" + _breed_prefix

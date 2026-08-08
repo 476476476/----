@@ -187,7 +187,11 @@ func _refresh_slots():
 		tex_rect.custom_minimum_size = Vector2(0, 110)
 
 		if horse != null:
-			var prefix = BREED_FILE_MAP.get(horse.breed.breed_name, "mongolian")
+			var prefix = BREED_FILE_MAP.get(horse.breed.breed_name, "")
+			if prefix == "":
+				prefix = BreedRegistry.get_prefix(horse.breed.breed_name)
+			if prefix == "":
+				prefix = "mongolian"
 			var frame_path = "res://Art_Resource/Horses/%s_run/frames/1.png" % prefix
 			if ResourceLoader.exists(frame_path):
 				tex_rect.texture = load(frame_path)
@@ -285,7 +289,11 @@ func _show_detail_popup(index):
 		tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		tex.set_anchors_preset(Control.PRESET_FULL_RECT)
-		var prefix = BREED_FILE_MAP.get(horse.breed.breed_name, "mongolian")
+		var prefix = BREED_FILE_MAP.get(horse.breed.breed_name, "")
+		if prefix == "":
+			prefix = BreedRegistry.get_prefix(horse.breed.breed_name)
+		if prefix == "":
+			prefix = "mongolian"
 		var frame_path = "res://Art_Resource/Horses/%s_run/frames/1.png" % prefix
 		if ResourceLoader.exists(frame_path):
 			tex.texture = load(frame_path)
@@ -576,6 +584,8 @@ func _setup_button_style(btn: Button):
 
 func _calc_sell_price(horse) -> int:
 	var base = BREED_BASE_PRICE.get(horse.breed.breed_name, 10)
+	if base == 10 and not BREED_BASE_PRICE.has(horse.breed.breed_name):
+		base = BreedRegistry.get_price(horse.breed.breed_name)
 	var speed = horse.get_actual_speed() / 10.0
 	var obedience = horse.obedience_mod
 	var loyalty = min(int(horse.distance_run / 1000.0), 100)

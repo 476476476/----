@@ -1,0 +1,22 @@
+{
+  "back_height": 492,
+  "display_back_height": 94.6,
+  "best_match": "mongolian",
+  "ref_back_height": 492,
+  "frame_size": [
+    1248,
+    704
+  ],
+  "match_scores": {
+    "baitiwu": 97.6,
+    "chitu": 113.1,
+    "dilu": 105.1,
+    "ferghana": 94.7,
+    "jueying": 104.5,
+    "mongolian": 94.6,
+    "thoroughbred": 90.6,
+    "wuzhui": 115.1,
+    "yili": 92.8,
+    "zhuahuang": 103.9
+  }
+}
