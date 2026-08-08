@@ -150,6 +150,9 @@ func _download_via_python(url: String, save_path: String, on_success: Callable, 
 	if python == "":
 		on_error.call("找不到 Python 环境，无法下载视频")
 		return
+	# save_path 可能是 user:// 协议路径，Python 不认（Errno 22）。
+	# 转成绝对路径；已是绝对路径时 globalize_path 原样返回。
+	save_path = ProjectSettings.globalize_path(save_path)
 	var script = ProjectSettings.globalize_path("res://ai_pipeline/download.py")
 	var output = []
 	var code = OS.execute(python, [script, url, save_path], output, true)
