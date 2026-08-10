@@ -157,6 +157,21 @@ func _discover_textures():
 		"res://Art_Resource/Rider/rider_fall/frames",
 	]
 
+	# AI 生成的品种：动态扫描 Art_Resource/Horses/ 下的 *_run/_exhausted/_crazy/frames（去重）
+	var horses_root = DirAccess.open("res://Art_Resource/Horses")
+	if horses_root:
+		horses_root.list_dir_begin()
+		var entry = horses_root.get_next()
+		while entry != "":
+			if horses_root.current_is_dir():
+				for state in ["_run", "_exhausted", "_crazy"]:
+					if entry.ends_with(state):
+						var d = "res://Art_Resource/Horses/" + entry + "/frames"
+						if not horse_dirs.has(d):
+							horse_dirs.append(d)
+			entry = horses_root.get_next()
+		horses_root.list_dir_end()
+
 	for dir_path in horse_dirs + rider_dirs:
 		var dir = DirAccess.open(dir_path)
 		if dir:
@@ -247,8 +262,9 @@ func _build_sprite_frames_cache():
 	if not GameManager.sprite_frames_cache.is_empty():
 		return
 
-	# Horse frames: 10 breeds × 3 states
+	# Horse frames: 10 breeds × 3 states (+ AI 生成的品种)
 	var breeds = ["mongolian", "yili", "thoroughbred", "ferghana", "chitu", "jueying", "baitiwu", "zhuahuang", "dilu", "wuzhui"]
+	breeds += BreedRegistry.get_all_prefixes()
 	var states = ["run", "exhausted", "crazy"]
 	var total = breeds.size() * states.size() + 3
 	var done = 0
@@ -439,7 +455,7 @@ const BREED_PATHS = [
 
 func _create_random_horse():
 	var breeds = []
-	for path in BREED_PATHS:
+	for path in BREED_PATHS + BreedRegistry.get_all_breed_paths():
 		breeds.append(load(path))
 
 	var breeds_by_rarity = {0: [], 1: [], 2: [], 3: []}

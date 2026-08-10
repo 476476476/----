@@ -1,0 +1,7 @@
+# Python 3.13 兼容版本（宽松约束）
+# 注意: 不再依赖 rembg——其模型下载器强制从 GitHub 拉取并校验固定 MD5，
+# 国内网络不可达。抠图改为直调 onnxruntime 加载本地模型（见 u2net_matting.py）。
+onnxruntime>=1.20.0
+opencv-python>=4.11.0
+pillow>=10.4.0
+numpy>=1.26.4

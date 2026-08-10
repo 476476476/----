@@ -1,0 +1,80 @@
+Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple
+Collecting rembg>=2.0.62 (from -r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/6f/d4/45b40053f2c55264b3cb7dce9e1dd2296e66d4b98865eed3ed8a405b0bfc/rembg-2.0.78-py3-none-any.whl (50 kB)
+Collecting onnxruntime>=1.20.0 (from -r requirements.txt (line 3))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/56/f1/51225c202edba4dfc94e1ea03f3d78f1aaf307da75fd792c0ce1946b2514/onnxruntime-1.28.0-cp313-cp313-win_amd64.whl (13.8 MB)
+     --------------------------------------- 13.8/13.8 MB 15.4 MB/s eta 0:00:00
+Collecting opencv-python>=4.11.0 (from -r requirements.txt (line 4))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/21/f0/9fa6e85cb10c8eb36a0222d27e50fe381b86ce49a55446bf39f491727564/opencv_python-5.0.0.93-cp37-abi3-win_amd64.whl (44.0 MB)
+     --------------------------------------- 44.0/44.0 MB 16.6 MB/s eta 0:00:00
+Collecting pillow>=10.4.0 (from -r requirements.txt (line 5))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/a6/9b/7a58e61d62be561da3a356fe2384d4059a6345fc130e23ef1c36a5b81d24/pillow-12.3.0-cp313-cp313-win_amd64.whl (7.2 MB)
+     ---------------------------------------- 7.2/7.2 MB 19.2 MB/s eta 0:00:00
+Collecting numpy>=1.26.4 (from -r requirements.txt (line 6))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/10/70/800b3fca480af32df9e8ea9f3d4a0c8feb4b32d7f195d174eabbda4829ad/numpy-2.5.1-cp313-cp313-win_amd64.whl (12.4 MB)
+     --------------------------------------- 12.4/12.4 MB 18.2 MB/s eta 0:00:00
+Collecting jsonschema<5.0.0,>=4.25.1 (from rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/69/90/f63fb5873511e014207a475e2bb4e8b2e570d655b00ac19a9a0ca0a385ee/jsonschema-4.26.0-py3-none-any.whl (90 kB)
+Collecting pooch<2.0.0,>=1.8.2 (from rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/2a/2d/d4bf65e47cea8ff2c794a600c4fd1273a7902f268757c531e0ee9f18aa58/pooch-1.9.0-py3-none-any.whl (67 kB)
+Collecting pymatting<2.0.0,>=1.1.14 (from rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/c7/59/87a27f2539b0a9436853484e80f6a3ef96c30caa0316dce85f1f29d9e953/pymatting-1.1.15-py3-none-any.whl (54 kB)
+Collecting scikit-image<0.27.0,>=0.26.0 (from rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/8f/58/2b11b933097bc427e42b4a8b15f7de8f24f2bac1fd2779d2aea1431b2c31/scikit_image-0.26.0-cp313-cp313-win_amd64.whl (11.9 MB)
+     --------------------------------------- 11.9/11.9 MB 16.4 MB/s eta 0:00:00
+Collecting scipy<2.0.0,>=1.16.3 (from rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/b7/d2/ae881ee28d014f38e0ccbfd974a06a919ba9af34f1f74bf42b5301891d63/scipy-1.18.0-cp313-cp313-win_amd64.whl (36.6 MB)
+     --------------------------------------- 36.6/36.6 MB 18.4 MB/s eta 0:00:00
+Collecting tqdm<5.0.0,>=4.67.1 (from rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/f9/1c/01bfd571a64e7f270e6bab5e33777debe0edc56759233ce84f27dec92d14/tqdm-4.70.0-py3-none-any.whl (80 kB)
+Collecting flatbuffers (from onnxruntime>=1.20.0->-r requirements.txt (line 3))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/e8/2d/d2a548598be01649e2d46231d151a6c56d10b964d94043a335ae56ea2d92/flatbuffers-25.12.19-py2.py3-none-any.whl (26 kB)
+Collecting packaging (from onnxruntime>=1.20.0->-r requirements.txt (line 3))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/63/34/ba1c580383c9eada3711951fef0795c80b829a078d72188184bcab9dd527/packaging-26.3-py3-none-any.whl (129 kB)
+Collecting protobuf>=4.25.8 (from onnxruntime>=1.20.0->-r requirements.txt (line 3))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/0a/19/8d0cb6f20a1ef7b18f1c8986ad5783f22f84cce39c6ce9a6e645ea55192e/protobuf-7.35.1-cp310-abi3-win_amd64.whl (439 kB)
+Collecting attrs>=22.2.0 (from jsonschema<5.0.0,>=4.25.1->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/64/b4/17d4b0b2a2dc85a6df63d1157e028ed19f90d4cd97c36717afef2bc2f395/attrs-26.1.0-py3-none-any.whl (67 kB)
+Collecting jsonschema-specifications>=2023.03.6 (from jsonschema<5.0.0,>=4.25.1->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/41/45/1a4ed80516f02155c51f51e8cedb3c1902296743db0bbc66608a0db2814f/jsonschema_specifications-2025.9.1-py3-none-any.whl (18 kB)
+Collecting referencing>=0.28.4 (from jsonschema<5.0.0,>=4.25.1->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/2c/58/ca301544e1fa93ed4f80d724bf5b194f6e4b945841c5bfd555878eea9fcb/referencing-0.37.0-py3-none-any.whl (26 kB)
+Collecting rpds-py>=0.25.0 (from jsonschema<5.0.0,>=4.25.1->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/7b/ed/a03b09668e74e5dabbf2e211f6468e1820c0552f7b0500082da31841bf7b/rpds_py-2026.6.3-cp313-cp313-win_amd64.whl (219 kB)
+Collecting platformdirs>=2.5.0 (from pooch<2.0.0,>=1.8.2->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/7d/68/d8d58938dfb1370b266a1a729e6d77a985be23689a0496498ee17b2cbf90/platformdirs-4.11.0-py3-none-any.whl (23 kB)
+Collecting requests>=2.19.0 (from pooch<2.0.0,>=1.8.2->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/a0/f4/c67b0b3f1b9245e8d266f0f112c500d50e5b4e83cb6f3b71b6528104182a/requests-2.34.2-py3-none-any.whl (73 kB)
+Collecting numba>=0.60.0 (from pymatting<2.0.0,>=1.1.14->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/83/7e/cea7710e96913d3c7f2999f16db1b28e6c5be5171cbf40f77f98333a7243/numba-0.66.0-cp313-cp313-win_amd64.whl (2.8 MB)
+     ---------------------------------------- 2.8/2.8 MB 16.4 MB/s eta 0:00:00
+Collecting networkx>=3.0 (from scikit-image<0.27.0,>=0.26.0->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/9e/c9/b2622292ea83fbb4ec318f5b9ab867d0a28ab43c5717bb85b0a5f6b3b0a4/networkx-3.6.1-py3-none-any.whl (2.1 MB)
+     ---------------------------------------- 2.1/2.1 MB 16.6 MB/s eta 0:00:00
+Collecting imageio!=2.35.0,>=2.33 (from scikit-image<0.27.0,>=0.26.0->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/3e/2d/ca050652104bab2cf55e569db2a178b1b61cb041fef28307f2db383f6d9f/imageio-2.37.4-py3-none-any.whl (318 kB)
+Collecting tifffile>=2022.8.12 (from scikit-image<0.27.0,>=0.26.0->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/da/ed/75bf4d6ae6fec7233ef466f27dffc99f91fde53a31e69f02640b418317ec/tifffile-2026.7.31-py3-none-any.whl (271 kB)
+Collecting lazy-loader>=0.4 (from scikit-image<0.27.0,>=0.26.0->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/8a/a1/8d812e53a5da1687abb10445275d41a8b13adb781bbf7196ddbcf8d88505/lazy_loader-0.5-py3-none-any.whl (8.0 kB)
+Collecting colorama (from tqdm<5.0.0,>=4.67.1->rembg>=2.0.62->-r requirements.txt (line 2))
+  Using cached https://pypi.tuna.tsinghua.edu.cn/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl (25 kB)
+Collecting llvmlite<0.49,>=0.48.0dev0 (from numba>=0.60.0->pymatting<2.0.0,>=1.1.14->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/17/97/5a430055d1838cf1fb7a01cfa943300f5e4c026fc6333a522c5e4a03b0c1/llvmlite-0.48.0-cp313-cp313-win_amd64.whl (41.9 MB)
+     --------------------------------------- 41.9/41.9 MB 17.3 MB/s eta 0:00:00
+Collecting numpy>=1.26.4 (from -r requirements.txt (line 6))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/b5/cd/9cc4dc876fb065d5c220aae4d5e14826b2715331bb7618ce1fb07a679d99/numpy-2.4.6-cp313-cp313-win_amd64.whl (12.3 MB)
+     --------------------------------------- 12.3/12.3 MB 16.0 MB/s eta 0:00:00
+Collecting charset_normalizer<4,>=2 (from requests>=2.19.0->pooch<2.0.0,>=1.8.2->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/e8/ef/6953a77c7cf2c2ff9998e6f575ab3e380119f100223381565a4f94c1f836/charset_normalizer-3.4.9-cp313-cp313-win_amd64.whl (161 kB)
+Collecting idna<4,>=2.5 (from requests>=2.19.0->pooch<2.0.0,>=1.8.2->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/1e/5e/d4e9f1a599fb8e573b7b87160658329fbf28d19eac2718f51fc3def3aa5a/idna-3.18-py3-none-any.whl (65 kB)
+Collecting urllib3<3,>=1.26 (from requests>=2.19.0->pooch<2.0.0,>=1.8.2->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/7f/3e/5db95bcf282c52709639744ca2a8b149baccf648e39c8cc87553df9eae0c/urllib3-2.7.0-py3-none-any.whl (131 kB)
+Collecting certifi>=2023.5.7 (from requests>=2.19.0->pooch<2.0.0,>=1.8.2->rembg>=2.0.62->-r requirements.txt (line 2))
+  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/0b/a7/71ac2cff56fec219ed242bb11b8efb69fcc4bec75db06fb7bfe35de520e6/certifi-2026.7.22-py3-none-any.whl (136 kB)
+Installing collected packages: flatbuffers, urllib3, rpds-py, protobuf, platformdirs, pillow, packaging, numpy, networkx, llvmlite, idna, colorama, charset_normalizer, certifi, attrs, tqdm, tifffile, scipy, requests, referencing, opencv-python, onnxruntime, numba, lazy-loader, imageio, scikit-image, pymatting, pooch, jsonschema-specifications, jsonschema, rembg
+Successfully installed attrs-26.1.0 certifi-2026.7.22 charset_normalizer-3.4.9 colorama-0.4.6 flatbuffers-25.12.19 idna-3.18 imageio-2.37.4 jsonschema-4.26.0 jsonschema-specifications-2025.9.1 lazy-loader-0.5 llvmlite-0.48.0 networkx-3.6.1 numba-0.66.0 numpy-2.4.6 onnxruntime-1.28.0 opencv-python-5.0.0.93 packaging-26.3 pillow-12.3.0 platformdirs-4.11.0 pooch-1.9.0 protobuf-7.35.1 pymatting-1.1.15 referencing-0.37.0 rembg-2.0.78 requests-2.34.2 rpds-py-2026.6.3 scikit-image-0.26.0 scipy-1.18.0 tifffile-2026.7.31 tqdm-4.70.0 urllib3-2.7.0
+
+[notice] A new release of pip is available: 24.3.1 -> 26.2.1
+[notice] To update, run: F:\AICoding\Xyh\----\ai_pipeline\.venv\Scripts\python.exe -m pip install --upgrade pip
