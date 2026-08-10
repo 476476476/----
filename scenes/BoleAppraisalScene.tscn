@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://dlu5bnewi4ijl"]
+
+[ext_resource type="Script" uid="uid://cymm6jvpk5auv" path="res://scripts/BoleAppraisalScene.gd" id="1_2p34k"]
+[ext_resource type="PackedScene" uid="uid://f7nevn3thkgw" path="res://scenes/BoleCharacter.tscn" id="2_r4svw"]
+
+[node name="BoleAppraisalScene" type="Control" unique_id=1897163508]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_2p34k")
+
+[node name="ColorRect" type="ColorRect" parent="." unique_id=10060092]
+layout_mode = 0
+offset_right = 799.0
+offset_bottom = 599.0
+color = Color(0.8056994, 0.7250947, 0.57358444, 1)
+
+[node name="BoleCharacter" parent="." unique_id=1440891386 instance=ExtResource("2_r4svw")]
+
+[node name="Button" type="Button" parent="." unique_id=1349966766]
+layout_mode = 0
+offset_left = 354.0
+offset_top = 437.0
+offset_right = 522.0
+offset_bottom = 468.0
+text = "测试：识别到阿拉伯马"
+
+[node name="Button2" type="Button" parent="." unique_id=1514459366]
+layout_mode = 0
+offset_left = 354.0
+offset_top = 385.0
+offset_right = 522.0
+offset_bottom = 416.0
+text = "测试：识别到赤兔马"
+
+[node name="Button3" type="Button" parent="." unique_id=942183575]
+layout_mode = 0
+offset_right = 8.0
+offset_bottom = 8.0
+text = "返回主菜单"
+
+[node name="StatusLabel" type="Label" parent="." unique_id=444731357]
+layout_mode = 0
+offset_left = 354.0
+offset_top = 268.0
+offset_right = 394.0
+offset_bottom = 291.0
