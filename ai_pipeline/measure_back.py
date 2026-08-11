@@ -24,6 +24,9 @@ import json
 import os
 import sys
 
+# 嵌入式 Python 的 python.exe 不把脚本目录加入 sys.path，这里手动补上
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 import cv2
 import numpy as np
 from PIL import Image
@@ -96,9 +99,35 @@ def find_reference(ref_dir: str):
     return refs
 
 
+def load_refs(json_path: str):
+    """从预生成 JSON 读参考数据（导出游戏用：res:// 美术帧在 PCK 里 Python 读不到）。"""
+    with open(json_path, encoding="utf-8") as f:
+        return json.load(f)
+
+
+def dump_refs(ref_dir: str, out_path: str):
+    """预生成参考数据 JSON：python measure_back.py --dump-refs <out.json> <reference_dir/>"""
+    refs = find_reference(ref_dir)
+    if not refs:
+        print("没有找到参考品种", file=sys.stderr)
+        sys.exit(2)
+    with open(out_path, "w", encoding="utf-8") as f:
+        json.dump(refs, f, indent=2, ensure_ascii=False)
+    print("OK: %d 个品种参考数据写入 %s" % (len(refs), out_path))
+
+
 def main():
+    # 预生成模式：--dump-refs <out.json> <reference_dir/>
+    if "--dump-refs" in sys.argv:
+        i = sys.argv.index("--dump-refs")
+        if i + 2 >= len(sys.argv):
+            print("用法: python measure_back.py --dump-refs <out.json> <reference_dir/>")
+            sys.exit(1)
+        dump_refs(sys.argv[i + 2], sys.argv[i + 1])
+        return
+
     if len(sys.argv) < 4:
-        print("用法: python measure_back.py <horse.png> <reference_dir/> <output.json>")
+        print("用法: python measure_back.py <horse.png> <reference_dir/> <output.json> [--refs <refs.json>]")
         sys.exit(1)
 
     input_path, ref_dir, out_path = sys.argv[1], sys.argv[2], sys.argv[3]
@@ -107,7 +136,12 @@ def main():
     back = measure_back_height(rgba)
     print("输入马背高: %d px (图 %dx%d)" % (back, rgba.shape[1], rgba.shape[0]))
 
-    refs = find_reference(ref_dir)
+    # 导出游戏：美术帧在 PCK 里是 ctex，Python 读不到 → 用预生成 JSON
+    if "--refs" in sys.argv:
+        i = sys.argv.index("--refs")
+        refs = load_refs(sys.argv[i + 1])
+    else:
+        refs = find_reference(ref_dir)
     if not refs:
         print("没有找到参考品种", file=sys.stderr)
         sys.exit(2)

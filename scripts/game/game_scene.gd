@@ -172,16 +172,38 @@ func _discover_textures():
 			entry = horses_root.get_next()
 		horses_root.list_dir_end()
 
+	# 玩家 AI 品种（导出的游戏运行时注册）：user://ai_horses/frames/<prefix>_<anim>/frames
+	var user_frames = DirAccess.open("user://ai_horses/frames")
+	if user_frames:
+		user_frames.list_dir_begin()
+		var entry = user_frames.get_next()
+		while entry != "":
+			if user_frames.current_is_dir():
+				var d = "user://ai_horses/frames/" + entry + "/frames"
+				if not horse_dirs.has(d):
+					horse_dirs.append(d)
+			entry = user_frames.get_next()
+		user_frames.list_dir_end()
+
 	for dir_path in horse_dirs + rider_dirs:
 		var dir = DirAccess.open(dir_path)
 		if dir:
+			# 导出后 PCK：源 PNG 已转 .ctex（存 .godot/imported/），帧目录只剩 *.png.import 记录。
+			# 按 .import 计数帧数，逻辑路径统一 .png（load() 经 remap 找到 ctex）。
+			# 编辑器磁盘上 .png 与 .png.import 并存 → 字典去重。
+			var seen = {}
 			dir.list_dir_begin()
 			var fname = dir.get_next()
 			while fname != "":
-				if not dir.current_is_dir() and fname.ends_with(".png"):
-					paths.append(dir_path + "/" + fname)
+				if not dir.current_is_dir():
+					if fname.ends_with(".png"):
+						seen[dir_path + "/" + fname] = true
+					elif fname.ends_with(".import"):
+						seen[dir_path + "/" + fname.trim_suffix(".import")] = true
 				fname = dir.get_next()
 			dir.list_dir_end()
+			for p in seen:
+				paths.append(p)
 
 	return paths
 
@@ -271,7 +293,8 @@ func _build_sprite_frames_cache():
 	for breed in breeds:
 		for state in states:
 			var key = "horse:" + breed + ":" + state
-			var dir = "res://Art_Resource/Horses/" + breed + "_" + state + "/frames"
+			# user:// 品种帧 → user://，其余 → res://（BreedRegistry 自动解析，trim 尾斜杠以匹配帧数统计 key）
+			var dir = BreedRegistry.get_frames_base(breed, state).trim_suffix("/")
 			GameManager.sprite_frames_cache[key] = _make_sprite_frames(dir, 15.0)
 			done += 1
 			_update_cache_progress(done, total)
@@ -289,9 +312,17 @@ func _make_sprite_frames(dir_path: String, speed: float) -> SpriteFrames:
 	var frames = SpriteFrames.new()
 	frames.set_animation_speed("default", speed)
 	var count = _dir_frame_counts.get(dir_path, 0)
+	# user:// 帧是原生 PNG：Image 直接解码；res:// 帧已导入 ctex：load() 走 remap
+	var is_user = dir_path.begins_with("user://")
 	for i in range(1, count + 1):
 		var path = dir_path + "/" + str(i) + ".png"
-		var tex = load(path)
+		var tex: Texture2D = null
+		if is_user:
+			var img = Image.load_from_file(path)
+			if img:
+				tex = ImageTexture.create_from_image(img)
+		else:
+			tex = load(path)
 		if tex:
 			frames.add_frame("default", tex)
 	return frames
@@ -456,7 +487,9 @@ const BREED_PATHS = [
 func _create_random_horse():
 	var breeds = []
 	for path in BREED_PATHS + BreedRegistry.get_all_breed_paths():
-		breeds.append(load(path))
+		var b = load(path)
+		if b:
+			breeds.append(b)
 
 	var breeds_by_rarity = {0: [], 1: [], 2: [], 3: []}
 	for b in breeds:
@@ -474,7 +507,10 @@ func _create_random_horse():
 
 	var candidates = breeds_by_rarity[selected_rarity]
 	var breed = candidates[randi() % candidates.size()]
+	return _make_horse_data(breed)
 
+
+func _make_horse_data(breed) -> HorseData:
 	var data = HorseData.new()
 	data.breed = breed
 	data.horse_name = breed.breed_name

@@ -5,6 +5,7 @@ const SAVE_PATH = "user://save.dat"
 var best_distance = 0.0
 var resolution_index = 0  # 0=4:3, 1=16:9, 2=16:10
 var fullscreen = false
+var api_key = ""  # SiliconFlow API Key（AI 马匹生成用，玩家在设置界面填写）
 
 const RESOLUTIONS = [
 	{"label": "4:3 (1024×768)",   "window": Vector2i(1024, 768), "viewport": Vector2i(800, 600)},
@@ -47,6 +48,7 @@ func save_game():
 	config.set_value("meta", "best_distance", best_distance)
 	config.set_value("meta", "resolution_index", resolution_index)
 	config.set_value("meta", "fullscreen", fullscreen)
+	config.set_value("meta", "api_key", api_key)
 	config.set_value("collection", "unlocked_breeds", gm.unlocked_breeds)
 	config.save(SAVE_PATH)
 
@@ -74,6 +76,7 @@ func load_game():
 	best_distance = float(config.get_value("meta", "best_distance", 0.0))
 	resolution_index = int(config.get_value("meta", "resolution_index", 0))
 	fullscreen = bool(config.get_value("meta", "fullscreen", false))
+	api_key = config.get_value("meta", "api_key", "")
 	gm.unlocked_breeds = config.get_value("collection", "unlocked_breeds", [])
 
 func _horse_to_dict(horse):
