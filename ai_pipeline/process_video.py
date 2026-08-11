@@ -24,6 +24,9 @@ import json
 import os
 import sys
 
+# 嵌入式 Python 的 python.exe 不把脚本目录加入 sys.path，这里手动补上
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 import cv2
 import numpy as np
 from PIL import Image

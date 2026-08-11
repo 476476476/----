@@ -112,13 +112,16 @@ func _refresh_list():
 		tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		tex.custom_minimum_size = Vector2(80, 60)
 		tex.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		var prefix = BREED_FILE_MAP.get(horse.breed.breed_name, "")
-		if prefix == "":
-			prefix = BreedRegistry.get_prefix(horse.breed.breed_name)
+		# 前缀从 .tres 路径反推：同名多匹马各取各的图
+		var prefix = BreedRegistry.prefix_from_path(str(horse.breed.resource_path))
 		if prefix == "":
 			prefix = "mongolian"
-		var frame_path = "res://Art_Resource/Horses/%s_run/frames/1.png" % prefix
-		if ResourceLoader.exists(frame_path):
+		var frame_path = BreedRegistry.get_frame_path(prefix, "run", 1)
+		if frame_path.begins_with("user://"):
+			var img = Image.load_from_file(frame_path)
+			if img:
+				tex.texture = ImageTexture.create_from_image(img)
+		elif ResourceLoader.exists(frame_path):
 			tex.texture = load(frame_path)
 		row.add_child(tex)
 

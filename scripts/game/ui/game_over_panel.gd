@@ -265,6 +265,16 @@ func _show_replace_dialog():
 	_vbox.add_child(_make_label("选择要替换的马：", 18))
 
 	var gm = get_node("/root/GameManager")
+
+	# 马棚马列表放进滚动容器：马多时不会超出面板
+	var scroll = ScrollContainer.new()
+	scroll.custom_minimum_size = Vector2(0, 200)
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	var scroll_vbox = VBoxContainer.new()
+	scroll_vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(scroll_vbox)
+	_vbox.add_child(scroll)
+
 	for i in range(gm.stables.size()):
 		var horse = gm.stables[i]
 		if horse == null:
@@ -277,7 +287,7 @@ func _show_replace_dialog():
 			gm2.replace_horse_in_stable(idx, _pending_horse_data)
 			_show_add_result(_pending_horse_data, old_name)
 		)
-		_vbox.add_child(btn)
+		scroll_vbox.add_child(btn)
 
 	var spacer = Control.new()
 	spacer.custom_minimum_size = Vector2(0, 8)

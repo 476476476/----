@@ -52,6 +52,7 @@ func _ready():
 	$Panel/VBox/SubButtons/StableButton.pressed.connect(_on_stable_pressed)
 	$Panel/VBox/SubButtons/SettingsButton.pressed.connect(_on_settings_pressed)
 	$Panel/VBox/SubButtons/TutorialButton.pressed.connect(_on_tutorial_pressed)
+	$Panel/VBox/SubButtons/AiCreateButton.pressed.connect(_on_ai_create_pressed)
 	$Panel/VBox/QuitButton.pressed.connect(_on_quit_pressed)
 	$Panel/VBox/Activities/HBox/ReadButton.pressed.connect(_on_read_pressed)
 	$Panel/VBox/Activities/HBox/DrinkButton.pressed.connect(_on_drink_pressed)
@@ -134,6 +135,7 @@ func _setup_styles():
 		$Panel/VBox/SubButtons/StableButton,
 		$Panel/VBox/SubButtons/SettingsButton,
 		$Panel/VBox/SubButtons/TutorialButton,
+		$Panel/VBox/SubButtons/AiCreateButton,
 		$Panel/VBox/QuitButton,
 		$Panel/VBox/Activities/HBox/ReadButton,
 		$Panel/VBox/Activities/HBox/DrinkButton,
@@ -207,6 +209,9 @@ func _on_box_pressed():
 
 func _on_ride_pressed():
 	do_activity("驯马", 0.0, 0.0, 2.0, 100)
+
+func _on_ai_create_pressed():
+	get_tree().change_scene_to_file("res://scenes/ai_horse_create.tscn")
 
 func _on_tutorial_pressed():
 	# Clean up old popup

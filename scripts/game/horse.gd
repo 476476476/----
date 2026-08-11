@@ -45,13 +45,23 @@ func _load_frame_sequence(frames: SpriteFrames, anim_name: String, dir_path: Str
 	frames.set_animation_speed(anim_name, speed)
 	var i = 1
 	var first_size = Vector2.ZERO
+	# user:// 帧是原生 PNG：ResourceLoader/load 不支持，必须 Image 直接解码；
+	# res:// 帧已导入 ctex：走 load() remap。
+	var is_user = dir_path.begins_with("user://")
 	while i <= 50:
 		var path = dir_path + "/" + str(i) + ".png"
-		if not ResourceLoader.exists(path):
-			break
-		var tex = load(path)
-		if not tex:
-			break
+		var tex: Texture2D = null
+		if is_user:
+			var img = Image.load_from_file(path)
+			if img == null:
+				break
+			tex = ImageTexture.create_from_image(img)
+		else:
+			if not ResourceLoader.exists(path):
+				break
+			tex = load(path)
+			if not tex:
+				break
 		if first_size == Vector2.ZERO:
 			first_size = tex.get_size()
 		frames.add_frame(anim_name, tex)
@@ -62,14 +72,13 @@ func _load_frame_sequence(frames: SpriteFrames, anim_name: String, dir_path: Str
 
 
 func _setup_sprite():
-	_breed_prefix = BREED_FILE_MAP.get(horse_data.breed.breed_name, "")
-	if _breed_prefix == "":
-		_breed_prefix = BreedRegistry.get_prefix(horse_data.breed.breed_name)
+	# 前缀从 .tres 路径反推（ai_5.tres → ai_5，mongolian.tres → mongolian）：
+	# 同名多匹马各取各的帧，不受重名影响。
+	_breed_prefix = BreedRegistry.prefix_from_path(str(horse_data.breed.resource_path))
 	if _breed_prefix == "":
 		_breed_prefix = "mongolian"
 
 	var frames = SpriteFrames.new()
-	var base = "res://Art_Resource/Horses/" + _breed_prefix
 	var target = Vector2(240, 160)
 
 	for anim in ["run", "exhausted", "crazy"]:
@@ -86,7 +95,7 @@ func _setup_sprite():
 				if j == 0:
 					first_size = tex.get_size()
 		else:
-			first_size = _load_frame_sequence(frames, anim, base + "_" + anim + "/frames", 15.0, target)
+			first_size = _load_frame_sequence(frames, anim, BreedRegistry.get_frames_base(_breed_prefix, anim).trim_suffix("/"), 15.0, target)
 
 		if target != Vector2.ZERO and first_size.x > 0 and first_size.y > 0:
 			_anim_scales[anim] = min(target.x / first_size.x, target.y / first_size.y)
