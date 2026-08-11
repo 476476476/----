@@ -27,6 +27,7 @@ const BREED_FILE_MAP = {
 }
 
 var _detail_popup = null
+var _detail_overlay = null
 
 @onready var cards_container = $CenterContainer/Panel/VBox/Cards
 
@@ -85,15 +86,36 @@ func _build_cards():
 	for child in cards_container.get_children():
 		child.queue_free()
 
-	var unlocked_count = 0
+	# 按品种名分组：同名（内置 + 玩家重名注册）合并为一张卡片
 	var all_paths = BREED_PATHS + BreedRegistry.get_all_breed_paths()
+	var groups: Dictionary = {}  # name -> Array[breed]
+	var breed_paths: Dictionary = {}  # breed 实例 -> 来源 path
 	for path in all_paths:
 		var breed = load(path)
 		if breed == null:
 			continue
-		var is_unlocked = gm.is_breed_unlocked(path)
-		if is_unlocked:
+		breed_paths[breed] = path
+		if not groups.has(breed.breed_name):
+			groups[breed.breed_name] = []
+		groups[breed.breed_name].append(breed)
+
+	var unlocked_count = 0
+	for group in groups.values():
+		# 解锁判定：组内任一品种已解锁即算
+		var unlocked = false
+		for b in group:
+			if gm.is_breed_unlocked(breed_paths[b]):
+				unlocked = true
+				break
+		if unlocked:
 			unlocked_count += 1
+
+		# 卡片显示实例：优先玩家注册版（有 user:// 来源时）
+		var display = group[0]
+		for b in group:
+			if str(breed_paths[b]).begins_with("user://"):
+				display = b
+				break
 
 		var card = Panel.new()
 		card.custom_minimum_size = Vector2(190, 160)
@@ -119,23 +141,21 @@ func _build_cards():
 		vbox.add_theme_constant_override("separation", 2)
 		card.add_child(vbox)
 
-		if is_unlocked:
+		if unlocked:
 			var tex = TextureRect.new()
 			tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 			tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 			tex.custom_minimum_size = Vector2(0, 100)
-			var prefix = BREED_FILE_MAP.get(breed.breed_name, "")
-			if prefix == "":
-				prefix = BreedRegistry.get_prefix(breed.breed_name)
-			if prefix == "":
-				prefix = "mongolian"
-			var frame_path = "res://Art_Resource/Horses/%s_run/frames/1.png" % prefix
-			if ResourceLoader.exists(frame_path):
-				tex.texture = load(frame_path)
+			var thumb = _load_thumb(_breed_frame_path(display, breed_paths[display]))
+			if thumb:
+				tex.texture = thumb
 			vbox.add_child(tex)
 
 			var name_label = Label.new()
-			name_label.text = "%s\n[%s]" % [breed.breed_name, breed.get_rarity_string()]
+			name_label.text = "%s%s\n[%s]" % [
+				display.breed_name,
+				" ×%d" % group.size() if group.size() > 1 else "",
+				display.get_rarity_string()]
 			name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			name_label.add_theme_font_size_override("font_size", 15)
 			name_label.add_theme_color_override("font_color", Color.WHITE)
@@ -151,7 +171,7 @@ func _build_cards():
 			vbox.add_child(qmark)
 
 			var hint = Label.new()
-			hint.text = "尚未发现"
+			hint.text = display.breed_name
 			hint.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 			hint.add_theme_font_size_override("font_size", 14)
 			hint.add_theme_color_override("font_color", Color(0.5, 0.45, 0.4, 1.0))
@@ -163,8 +183,8 @@ func _build_cards():
 		btn.add_theme_stylebox_override("normal", StyleBoxEmpty.new())
 		btn.add_theme_stylebox_override("hover", StyleBoxEmpty.new())
 		btn.add_theme_stylebox_override("pressed", StyleBoxEmpty.new())
-		if is_unlocked:
-			btn.pressed.connect(_show_detail.bind(breed))
+		if unlocked:
+			btn.pressed.connect(_show_detail_group.bind(group, breed_paths, 0))
 		else:
 			btn.pressed.connect(func():
 				unlock_hint.text = "尚未发现该品种，将马匹收入马厩即可解锁"
@@ -174,11 +194,38 @@ func _build_cards():
 
 		cards_container.add_child(card)
 
-	unlock_hint.text = "已解锁 %d / %d 种" % [unlocked_count, all_paths.size()]
+	unlock_hint.text = "已解锁 %d / %d 种" % [unlocked_count, groups.size()]
 
-func _show_detail(breed):
+
+## 按实例来源取帧路径：user:// 实例 → 玩家帧（registry 前缀）；res:// → 内置帧（BREED_FILE_MAP）。
+## 重名时两个版本必须各取各的帧，不能只按名字查（名字会被 registry 的 user 条目覆盖）。
+func _breed_frame_path(breed, path: String) -> String:
+	# 前缀从 .tres 路径反推：同名多匹马各取各的帧
+	var prefix = BreedRegistry.prefix_from_path(path)
+	if prefix == "":
+		prefix = "mongolian"
+	return BreedRegistry.get_frame_path(prefix, "run", 1)
+
+
+func _load_thumb(path: String) -> Texture2D:
+	if path.begins_with("user://"):
+		var img = Image.load_from_file(path)
+		if img:
+			return ImageTexture.create_from_image(img)
+		return null
+	if ResourceLoader.exists(path):
+		return load(path)
+	return null
+
+## 详情弹窗：同名多品种（内置 + 玩家重名）时顶部有切换按钮，分别查看各自信息
+func _show_detail_group(group: Array, breed_paths: Dictionary, index: int = 0):
+	# 切换/重开时清掉旧的弹窗和遮罩（queue_free 延迟释放，遮罩必须单独跟踪清理，否则累积黑屏）
 	if _detail_popup and is_instance_valid(_detail_popup):
 		_detail_popup.queue_free()
+		_detail_popup = null
+	if _detail_overlay and is_instance_valid(_detail_overlay):
+		_detail_overlay.queue_free()
+		_detail_overlay = null
 
 	var overlay = ColorRect.new()
 	overlay.name = "PopupOverlay"
@@ -186,6 +233,7 @@ func _show_detail(breed):
 	overlay.set_anchors_preset(Control.PRESET_FULL_RECT)
 	overlay.gui_input.connect(func(e): if e is InputEventMouseButton and e.pressed: _close_detail())
 	add_child(overlay)
+	_detail_overlay = overlay
 
 	var popup = Panel.new()
 	popup.name = "DetailPopup"
@@ -217,6 +265,34 @@ func _show_detail(breed):
 	pvbox.add_theme_constant_override("margin_bottom", 10)
 	popup.add_child(pvbox)
 
+	var breed = group[clampi(index, 0, group.size() - 1)]
+	var src_path = str(breed_paths.get(breed, ""))
+
+	# 内容区可滚动：切换按钮+标题+图+属性+介绍超高时不截断，关闭按钮固定底部
+	var scroll = ScrollContainer.new()
+	scroll.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	scroll.horizontal_scroll_mode = ScrollContainer.SCROLL_MODE_DISABLED
+	pvbox.add_child(scroll)
+	var content = VBoxContainer.new()
+	content.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	content.add_theme_constant_override("separation", 2)
+	scroll.add_child(content)
+
+	# 同名多品种时：编号切换按钮 1、2、3…（当前查看的编号高亮；以后加更多同名马自动按顺序编号）
+	if group.size() > 1:
+		var tab_row = HBoxContainer.new()
+		tab_row.alignment = BoxContainer.ALIGNMENT_CENTER
+		tab_row.add_theme_constant_override("separation", 6)
+		content.add_child(tab_row)
+		for i in range(group.size()):
+			var tab = Button.new()
+			tab.text = str(i + 1)
+			tab.pressed.connect(_show_detail_group.bind(group, breed_paths, i))
+			_setup_button_style(tab)
+			if i == index:
+				tab.add_theme_color_override("font_color", Color(0.95, 0.75, 0.25, 1.0))
+			tab_row.add_child(tab)
+
 	# Title
 	var title = Label.new()
 	title.text = breed.breed_name
@@ -225,22 +301,17 @@ func _show_detail(breed):
 	title.add_theme_color_override("font_color", Color(0.855, 0.647, 0.125, 1.0))
 	title.add_theme_color_override("font_outline_color", Color(0.173, 0.094, 0.063, 1.0))
 	title.add_theme_constant_override("outline_size", 2)
-	pvbox.add_child(title)
+	content.add_child(title)
 
-	# Image
+	# Image（按实例来源取帧：重名时内置/玩家各显示各的图）
 	var tex = TextureRect.new()
 	tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 	tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	tex.custom_minimum_size = Vector2(0, 100)
-	var prefix = BREED_FILE_MAP.get(breed.breed_name, "")
-	if prefix == "":
-		prefix = BreedRegistry.get_prefix(breed.breed_name)
-	if prefix == "":
-		prefix = "mongolian"
-	var frame_path = "res://Art_Resource/Horses/%s_run/frames/1.png" % prefix
-	if ResourceLoader.exists(frame_path):
-		tex.texture = load(frame_path)
-	pvbox.add_child(tex)
+	var thumb = _load_thumb(_breed_frame_path(breed, src_path))
+	if thumb:
+		tex.texture = thumb
+	content.add_child(tex)
 
 	# Stats
 	var stats = Label.new()
@@ -260,19 +331,19 @@ func _show_detail(breed):
 		breed.temper_min, breed.temper_max,
 		breed.obedience_min,
 	]
-	pvbox.add_child(stats)
+	content.add_child(stats)
 
 	# Encyclopedia text
 	if not breed.encyclopedia_text.is_empty():
 		var sep = HSeparator.new()
-		pvbox.add_child(sep)
+		content.add_child(sep)
 
 		var enc_label = Label.new()
 		enc_label.add_theme_font_size_override("font_size", 12)
 		enc_label.add_theme_color_override("font_color", Color(0.3, 0.2, 0.15, 1.0))
 		enc_label.text = breed.encyclopedia_text
 		enc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		pvbox.add_child(enc_label)
+		content.add_child(enc_label)
 
 	# Close button
 	var close_btn = Button.new()
@@ -286,13 +357,11 @@ func _show_detail(breed):
 
 func _close_detail():
 	if _detail_popup and is_instance_valid(_detail_popup):
-		var parent = _detail_popup.get_parent()
 		_detail_popup.queue_free()
-		if parent:
-			for child in parent.get_children():
-				if child.name == "PopupOverlay":
-					child.queue_free()
 		_detail_popup = null
+	if _detail_overlay and is_instance_valid(_detail_overlay):
+		_detail_overlay.queue_free()
+		_detail_overlay = null
 
 func _setup_button_style(btn: Button):
 	var normal = StyleBoxFlat.new()
