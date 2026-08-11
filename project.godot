@@ -20,6 +20,8 @@ config/icon="res://icon.svg"
 SaveSystem="*res://scripts/autoload/save_system.gd"
 GameManager="*res://scripts/autoload/game_manager.gd"
 AudioManager="*res://scripts/autoload/audio_manager.gd"
+BreedRegistry="*res://scripts/autoload/breed_registry.gd"
+Config="*uid://jn23sfcnkxrx"
 
 [display]
 
@@ -29,7 +31,7 @@ window/stretch/mode="canvas_items"
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot-mcp/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot-mcp/plugin.cfg", "res://addons/horse_generator/plugin.cfg")
 
 [physics]
 

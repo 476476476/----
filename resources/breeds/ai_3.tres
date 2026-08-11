@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="HorseBreed" format=3 uid="uid://bw4f3uvpshda4"]
+
+[ext_resource type="Script" uid="uid://dp8bl7ew84le8" path="res://scripts/resources/horse_breed.gd" id="1_upirw"]
+
+[resource]
+script = ExtResource("1_upirw")
+breed_name = "红马"
+base_speed = 60.0
+base_stamina = 25.0
+obedience_min = 20.0
+rarity = 1
+spawn_weight = 40.0
+encyclopedia_text = "红色的马"

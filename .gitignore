@@ -1,3 +1,9 @@
 # Godot 4+ specific ignores
 .godot/
 /android/
+
+# API Key（绝不上传）
+ai_pipeline/.env
+
+# 大模型权重（无需进仓库）
+ai_pipeline/embedded_python/python-3.13-embed-amd64/models/u2net.onnx

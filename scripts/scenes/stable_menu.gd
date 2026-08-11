@@ -187,9 +187,16 @@ func _refresh_slots():
 		tex_rect.custom_minimum_size = Vector2(0, 110)
 
 		if horse != null:
-			var prefix = BREED_FILE_MAP.get(horse.breed.breed_name, "mongolian")
-			var frame_path = "res://Art_Resource/Horses/%s_run/frames/1.png" % prefix
-			if ResourceLoader.exists(frame_path):
+			# 前缀从 .tres 路径反推：同名多匹马各取各的图
+			var prefix = BreedRegistry.prefix_from_path(str(horse.breed.resource_path))
+			if prefix == "":
+				prefix = "mongolian"
+			var frame_path = BreedRegistry.get_frame_path(prefix, "run", 1)
+			if frame_path.begins_with("user://"):
+				var img = Image.load_from_file(frame_path)
+				if img:
+					tex_rect.texture = ImageTexture.create_from_image(img)
+			elif ResourceLoader.exists(frame_path):
 				tex_rect.texture = load(frame_path)
 		stall_vbox.add_child(tex_rect)
 
@@ -285,9 +292,16 @@ func _show_detail_popup(index):
 		tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		tex.set_anchors_preset(Control.PRESET_FULL_RECT)
-		var prefix = BREED_FILE_MAP.get(horse.breed.breed_name, "mongolian")
-		var frame_path = "res://Art_Resource/Horses/%s_run/frames/1.png" % prefix
-		if ResourceLoader.exists(frame_path):
+		# 前缀从 .tres 路径反推：同名多匹马各取各的图
+		var prefix = BreedRegistry.prefix_from_path(str(horse.breed.resource_path))
+		if prefix == "":
+			prefix = "mongolian"
+		var frame_path = BreedRegistry.get_frame_path(prefix, "run", 1)
+		if frame_path.begins_with("user://"):
+			var img = Image.load_from_file(frame_path)
+			if img:
+				tex.texture = ImageTexture.create_from_image(img)
+		elif ResourceLoader.exists(frame_path):
 			tex.texture = load(frame_path)
 		tex_container.add_child(tex)
 
@@ -576,6 +590,9 @@ func _setup_button_style(btn: Button):
 
 func _calc_sell_price(horse) -> int:
 	var base = BREED_BASE_PRICE.get(horse.breed.breed_name, 10)
+	if base == 10 and not BREED_BASE_PRICE.has(horse.breed.breed_name):
+		# 按 .tres 路径查价：同名多匹马价格各自独立
+		base = BreedRegistry.get_price_for_path(str(horse.breed.resource_path))
 	var speed = horse.get_actual_speed() / 10.0
 	var obedience = horse.obedience_mod
 	var loyalty = min(int(horse.distance_run / 1000.0), 100)

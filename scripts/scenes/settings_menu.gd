@@ -8,6 +8,8 @@ extends Control
 @onready var music_value = $Panel/VBox/MusicVolume/ValueLabel
 @onready var resolution_option = $Panel/VBox/Resolution/OptionButton
 @onready var fullscreen_cb = $Panel/VBox/Fullscreen/CheckBox
+@onready var api_key_edit = $Panel/VBox/ApiKey/LineEdit
+@onready var api_save_btn = $Panel/VBox/ApiKey/SaveButton
 
 func _ready():
 	var am = get_node("/root/AudioManager")
@@ -32,6 +34,11 @@ func _ready():
 	sfx_slider.value_changed.connect(_on_sfx_changed)
 	music_slider.value_changed.connect(_on_music_changed)
 	$Panel/VBox/BackButton.pressed.connect(_on_back_pressed)
+
+	# API Key（AI 马匹生成）
+	api_key_edit.text = ss.api_key
+	api_key_edit.text_submitted.connect(func(_t): _on_api_key_saved())
+	api_save_btn.pressed.connect(_on_api_key_saved)
 	_setup_styles()
 
 func _setup_styles():
@@ -67,6 +74,13 @@ func _setup_styles():
 		val_lbl.add_theme_color_override("font_color", Color(0.855, 0.647, 0.125, 1.0))
 		val_lbl.custom_minimum_size = Vector2(48, 0)
 		val_lbl.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+
+	# API Key row
+	var api_label = $Panel/VBox/ApiKey/Label
+	api_label.add_theme_color_override("font_color", Color(0.25, 0.15, 0.1, 1.0))
+	api_label.custom_minimum_size = Vector2(60, 0)
+	api_key_edit.add_theme_color_override("font_color", Color(0.25, 0.15, 0.1, 1.0))
+	api_save_btn.add_theme_color_override("font_color", Color(0.25, 0.15, 0.1, 1.0))
 
 	# Resolution row
 	var res_label = $Panel/VBox/Resolution/Label
@@ -155,6 +169,15 @@ func _on_fullscreen_toggled(on):
 	ss.fullscreen = on
 	resolution_option.disabled = on
 	ss.apply_resolution()
+
+func _on_api_key_saved():
+	var ss = get_node("/root/SaveSystem")
+	ss.api_key = api_key_edit.text.strip_edges()
+	ss.save_game()
+	api_save_btn.text = "已保存"
+	await get_tree().create_timer(1.5).timeout
+	api_save_btn.text = "保存"
+
 
 func _on_back_pressed():
 	get_tree().change_scene_to_file("res://scenes/main_menu.tscn")

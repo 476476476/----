@@ -144,6 +144,34 @@ layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 16
 
+[node name="ApiKey" type="HBoxContainer" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Label" type="Label" parent="Panel/VBox/ApiKey"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "AI Key"
+horizontal_alignment = 1
+tooltip_text = "SiliconFlow API Key（AI 马匹生成用）"
+
+[node name="LineEdit" type="LineEdit" parent="Panel/VBox/ApiKey"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "sk-..."
+tooltip_text = "SiliconFlow API Key（AI 马匹生成用）"
+
+[node name="SaveButton" type="Button" parent="Panel/VBox/ApiKey"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "保存"
+
+[node name="ApiKeyHint" type="Label" parent="Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "用于 AI 创造马匹（风格化/动画生成），保存在本机"
+horizontal_alignment = 1
+
 [node name="Spacer" type="Control" parent="Panel/VBox"]
 layout_mode = 2
 custom_minimum_size = Vector2(0, 4)

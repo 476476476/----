@@ -1,0 +1,14 @@
+[
+	{
+		"name": "红马",
+		"path": "res://resources/breeds/ai_3.tres",
+		"prefix": "ai_3",
+		"price": 120.0
+	},
+	{
+		"name": "王朝烈马",
+		"path": "res://resources/breeds/ai_4.tres",
+		"prefix": "ai_4",
+		"price": 120
+	}
+]
