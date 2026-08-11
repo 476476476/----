@@ -174,10 +174,14 @@ func _on_delete():
 	w.close()  # 必须先关闭句柄落盘，否则 reload 读到的是被截断的空文件
 	get_node("/root/BreedRegistry").reload()
 
-	# 2. 删 .tres + 帧目录（user:// 无文件锁，DirAccess 直接删）
+	# 2. 删 .tres + 帧目录（检查返回值，失败不再静默）
+	var del_errors = []
 	if prefix != "":
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(USER_BREEDS_DIR + prefix + ".tres"))
-		_remove_recursive(ProjectSettings.globalize_path(USER_FRAMES_DIR + prefix + "_run"))
+		var tres_err = DirAccess.remove_absolute(ProjectSettings.globalize_path(USER_BREEDS_DIR + prefix + ".tres"))
+		if tres_err != OK and FileAccess.file_exists(USER_BREEDS_DIR + prefix + ".tres"):
+			del_errors.append("删除品种文件失败: %s" % error_string(tres_err))
+		if not _remove_recursive(ProjectSettings.globalize_path(USER_FRAMES_DIR + prefix + "_run")):
+			del_errors.append("删除帧目录失败")
 
 	# 3. 同步清理马棚：凡 breed_path 反推前缀等于被删前缀的马整匹移除
 	var gm = get_node("/root/GameManager")
@@ -198,26 +202,34 @@ func _on_delete():
 	get_node("/root/SaveSystem").save_game()
 
 	_refresh_horse_list()
-	_err_label.text = "🗑️ 已删除「%s」" % name
+	if del_errors.is_empty():
+		_err_label.text = "🗑️ 已删除「%s」" % name
+	else:
+		_err_label.text = "🗑️ 已删除「%s」（部分文件删除失败，需手动清理）\n%s" % [name, "\n".join(del_errors)]
 
 
-## DirAccess.remove_absolute 只能删空目录，这里递归删除
-func _remove_recursive(path: String):
+## DirAccess.remove_absolute 只能删空目录，这里递归删除；返回是否全部删成功
+func _remove_recursive(path: String) -> bool:
+	var ok = true
 	var dir = DirAccess.open(path)
 	if dir == null:
-		return
+		return true  # 目录不存在视为已删
 	dir.list_dir_begin()
 	var fname = dir.get_next()
 	while fname != "":
 		if fname != "." and fname != "..":
 			var full = path + "/" + fname
 			if dir.current_is_dir():
-				_remove_recursive(full)
+				if not _remove_recursive(full):
+					ok = false
 			else:
-				DirAccess.remove_absolute(full)
+				if DirAccess.remove_absolute(full) != OK:
+					ok = false
 		fname = dir.get_next()
 	dir.list_dir_end()
-	DirAccess.remove_absolute(path)
+	if DirAccess.remove_absolute(path) != OK:
+		ok = false
+	return ok
 
 
 func _reset_delete():

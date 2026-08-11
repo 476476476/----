@@ -5,15 +5,17 @@ extends Control
 @onready var btn_test_arabian = $Button  # 你之前的测试按钮1
 @onready var btn_test_chitu = $Button2   # 你之前的测试按钮2
 @onready var btn_back = $Button3         # 返回按钮
+@onready var btn_ai_create = $AiCreateButton  # AI 造马入口
 @onready var status_label = $StatusLabel
 
 func _ready():
 	status_label.text = ""
-	
+
 	# 连接按钮信号
 	btn_test_arabian.pressed.connect(_on_test_arabian_pressed)
 	btn_test_chitu.pressed.connect(_on_test_chitu_pressed)
 	btn_back.pressed.connect(_on_back_pressed)
+	btn_ai_create.pressed.connect(_on_ai_create_pressed)
 	
 	# 连接伯乐介绍完的信号
 	bole.introduction_finished.connect(_on_bole_intro_finished)
@@ -74,6 +76,10 @@ func _on_bole_intro_finished():
 	
 	await get_tree().create_timer(2.0).timeout
 	_set_buttons_enabled(true)
+
+# AI 造马（原主菜单入口挪到这里）
+func _on_ai_create_pressed():
+	get_tree().change_scene_to_file("res://scenes/ai_horse_create.tscn")
 
 # 返回主菜单
 func _on_back_pressed():
