@@ -59,6 +59,8 @@ func _ready():
 	$Panel/VBox/Activities/HBox/MeditateButton.pressed.connect(_on_meditate_pressed)
 	$Panel/VBox/Activities/HBox/BoxButton.pressed.connect(_on_box_pressed)
 	$Panel/VBox/Activities/HBox/RideButton.pressed.connect(_on_ride_pressed)
+#	添加伯乐相马
+	$Panel/VBox/SubButtons/BoleAppraisalButton.pressed.connect(_on_bole_appraisal_pressed)
 	_setup_styles()
 	update_display()
 	get_node("/root/SaveSystem").apply_resolution()
