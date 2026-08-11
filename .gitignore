@@ -5,5 +5,5 @@
 # API Key（绝不上传）
 ai_pipeline/.env
 
-# 大模型权重（无需进仓库）
-ai_pipeline/embedded_python/python-3.13-embed-amd64/models/u2net.onnx
+# embedded_python 体积过大，不进仓库（分发时放 exe 同目录）
+ai_pipeline/embedded_python/

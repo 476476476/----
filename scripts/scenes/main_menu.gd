@@ -52,7 +52,7 @@ func _ready():
 	$Panel/VBox/SubButtons/StableButton.pressed.connect(_on_stable_pressed)
 	$Panel/VBox/SubButtons/SettingsButton.pressed.connect(_on_settings_pressed)
 	$Panel/VBox/SubButtons/TutorialButton.pressed.connect(_on_tutorial_pressed)
-	$Panel/VBox/SubButtons/AiCreateButton.pressed.connect(_on_ai_create_pressed)
+	$Panel/VBox/SubButtons/BoleAppraisalButton.pressed.connect(_on_bole_appraisal_pressed)
 	$Panel/VBox/QuitButton.pressed.connect(_on_quit_pressed)
 	$Panel/VBox/Activities/HBox/ReadButton.pressed.connect(_on_read_pressed)
 	$Panel/VBox/Activities/HBox/DrinkButton.pressed.connect(_on_drink_pressed)
@@ -137,7 +137,7 @@ func _setup_styles():
 		$Panel/VBox/SubButtons/StableButton,
 		$Panel/VBox/SubButtons/SettingsButton,
 		$Panel/VBox/SubButtons/TutorialButton,
-		$Panel/VBox/SubButtons/AiCreateButton,
+		$Panel/VBox/SubButtons/BoleAppraisalButton,
 		$Panel/VBox/QuitButton,
 		$Panel/VBox/Activities/HBox/ReadButton,
 		$Panel/VBox/Activities/HBox/DrinkButton,
