@@ -59,6 +59,8 @@ func _ready():
 	$Panel/VBox/Activities/HBox/MeditateButton.pressed.connect(_on_meditate_pressed)
 	$Panel/VBox/Activities/HBox/BoxButton.pressed.connect(_on_box_pressed)
 	$Panel/VBox/Activities/HBox/RideButton.pressed.connect(_on_ride_pressed)
+#	添加伯乐相马
+	$Panel/VBox/SubButtons/BoleAppraisalButton.pressed.connect(_on_bole_appraisal_pressed)
 	_setup_styles()
 	update_display()
 	get_node("/root/SaveSystem").apply_resolution()
@@ -404,3 +406,7 @@ func _make_h_line_stylebox(color: Color) -> StyleBoxLine:
 	sb.thickness = 1
 	sb.vertical = false
 	return sb
+
+# 伯乐相马
+func _on_bole_appraisal_pressed():
+	get_tree().change_scene_to_file("res://scenes/BoleAppraisalScene.tscn")
