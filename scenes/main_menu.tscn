@@ -2,26 +2,26 @@
 
 [ext_resource type="Script" uid="uid://cpi3ylpw6t83y" path="res://scripts/scenes/main_menu.gd" id="1_l6cm7"]
 
-[node name="Control" type="Control" unique_id=609179301]
+[node name="Control" type="Control"]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 script = ExtResource("1_l6cm7")
 
-[node name="Overlay" type="ColorRect" parent="." unique_id=1026111318]
+[node name="Overlay" type="ColorRect" parent="."]
 layout_mode = 0
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 color = Color(0.173, 0.094, 0.063, 0.85)
 
-[node name="EncyclopediaBtn" type="Button" parent="." unique_id=1726296850]
+[node name="EncyclopediaBtn" type="Button" parent="."]
 layout_mode = 1
-anchors_preset = 1
 anchor_left = 1.0
+anchor_top = 0.0
 anchor_right = 1.0
+anchor_bottom = 0.0
 offset_left = -130.0
 offset_top = 12.0
 offset_right = -12.0
@@ -29,132 +29,129 @@ offset_bottom = 52.0
 theme_override_font_sizes/font_size = 16
 text = "📖 图鉴"
 
-[node name="Panel" type="Panel" parent="." unique_id=1381660560]
+[node name="Panel" type="Panel" parent="."]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -250.0
-offset_top = -280.0
-offset_right = 250.0
-offset_bottom = 280.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_left = -250
+offset_top = -280
+offset_right = 250
+offset_bottom = 280
 
-[node name="VBox" type="VBoxContainer" parent="Panel" unique_id=272963724]
+[node name="VBox" type="VBoxContainer" parent="Panel"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 theme_override_constants/separation = 12
 
-[node name="TitleLabel" type="Label" parent="Panel/VBox" unique_id=978401046]
+[node name="TitleLabel" type="Label" parent="Panel/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 42
 text = "牛仔跑酷"
 horizontal_alignment = 1
 
-[node name="GoldLabel" type="Label" parent="Panel/VBox" unique_id=751849530]
+[node name="GoldLabel" type="Label" parent="Panel/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 24
 text = "金币: 200"
 horizontal_alignment = 1
 
-[node name="BestDistLabel" type="Label" parent="Panel/VBox" unique_id=99605592]
+[node name="BestDistLabel" type="Label" parent="Panel/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "最远记录: 0 m"
 horizontal_alignment = 1
 
-[node name="StatsLabel" type="Label" parent="Panel/VBox" unique_id=1878773567]
+[node name="StatsLabel" type="Label" parent="Panel/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 13
 text = "性格: 50  脾气: 50  驯服: 0  跳跃: 10"
 horizontal_alignment = 1
 
-[node name="StartButton" type="Button" parent="Panel/VBox" unique_id=1208518483]
+[node name="StartButton" type="Button" parent="Panel/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 32
 text = "开始游戏"
 
-[node name="SubButtons" type="HBoxContainer" parent="Panel/VBox" unique_id=1549376306]
+[node name="SubButtons" type="HBoxContainer" parent="Panel/VBox"]
 layout_mode = 2
 theme_override_constants/separation = 12
 
-[node name="StableButton" type="Button" parent="Panel/VBox/SubButtons" unique_id=1033670933]
+[node name="StableButton" type="Button" parent="Panel/VBox/SubButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 22
 text = "马棚"
 
-[node name="SettingsButton" type="Button" parent="Panel/VBox/SubButtons" unique_id=1747176803]
+[node name="SettingsButton" type="Button" parent="Panel/VBox/SubButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 22
 text = "设置"
 
-[node name="TutorialButton" type="Button" parent="Panel/VBox/SubButtons" unique_id=543883196]
+[node name="TutorialButton" type="Button" parent="Panel/VBox/SubButtons"]
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 22
 text = "教程"
 
-[node name="BoleAppraisalButton" type="Button" parent="Panel/VBox/SubButtons" unique_id=855067733]
+[node name="AiCreateButton" type="Button" parent="Panel/VBox/SubButtons"]
 layout_mode = 2
+size_flags_horizontal = 3
 theme_override_font_sizes/font_size = 22
-text = "伯乐相马"
+text = "AI 造马"
 
-[node name="QuitButton" type="Button" parent="Panel/VBox" unique_id=1946986917]
+[node name="QuitButton" type="Button" parent="Panel/VBox"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 22
 text = "退出游戏"
 
-[node name="HSeparator" type="HSeparator" parent="Panel/VBox" unique_id=188810870]
+[node name="HSeparator" type="HSeparator" parent="Panel/VBox"]
 layout_mode = 2
 
-[node name="Activities" type="VBoxContainer" parent="Panel/VBox" unique_id=1224688066]
+[node name="Activities" type="VBoxContainer" parent="Panel/VBox"]
 layout_mode = 2
 
-[node name="ActivitiesLabel" type="Label" parent="Panel/VBox/Activities" unique_id=1769494383]
+[node name="ActivitiesLabel" type="Label" parent="Panel/VBox/Activities"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 18
 text = "每日活动"
 horizontal_alignment = 1
 
-[node name="HBox" type="HBoxContainer" parent="Panel/VBox/Activities" unique_id=1528447849]
+[node name="HBox" type="HBoxContainer" parent="Panel/VBox/Activities"]
 layout_mode = 2
 theme_override_constants/separation = 6
 
-[node name="ReadButton" type="Button" parent="Panel/VBox/Activities/HBox" unique_id=1379844341]
+[node name="ReadButton" type="Button" parent="Panel/VBox/Activities/HBox"]
 layout_mode = 2
 text = "读书
 -性格 50g"
 
-[node name="DrinkButton" type="Button" parent="Panel/VBox/Activities/HBox" unique_id=2032424282]
+[node name="DrinkButton" type="Button" parent="Panel/VBox/Activities/HBox"]
 layout_mode = 2
 text = "喝酒
 +性格 50g"
 
-[node name="MeditateButton" type="Button" parent="Panel/VBox/Activities/HBox" unique_id=410375004]
+[node name="MeditateButton" type="Button" parent="Panel/VBox/Activities/HBox"]
 layout_mode = 2
 text = "冥想
 -脾气 50g"
 
-[node name="BoxButton" type="Button" parent="Panel/VBox/Activities/HBox" unique_id=1955176471]
+[node name="BoxButton" type="Button" parent="Panel/VBox/Activities/HBox"]
 layout_mode = 2
 text = "打拳
 +脾气 50g"
 
-[node name="RideButton" type="Button" parent="Panel/VBox/Activities/HBox" unique_id=1442945199]
+[node name="RideButton" type="Button" parent="Panel/VBox/Activities/HBox"]
 layout_mode = 2
 text = "驯马
 +驯服 100g"
 
-[node name="StatusLabel" type="Label" parent="Panel/VBox/Activities" unique_id=842826762]
+[node name="StatusLabel" type="Label" parent="Panel/VBox/Activities"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 14
 horizontal_alignment = 1
