@@ -63,6 +63,33 @@ func _build_content(_content: VBoxContainer):
 
 
 func on_enter():
+	# ========== 8.11 xyh 新增：检查伯乐有没有传图片和品种过来 ==========
+	var gm = get_node_or_null("/root/GameManager")
+	if gm and gm.has_meta("bole_pending_photo"):
+		var photo_path = gm.get_meta("bole_pending_photo")
+		var breed_name = gm.get_meta("bole_pending_breed")
+		# 用完就清掉，避免下次进来还带着
+		gm.remove_meta("bole_pending_photo")
+		gm.remove_meta("bole_pending_breed")
+
+		if FileAccess.file_exists(photo_path):
+			# 复制图片到生成器的工作区
+			DirAccess.make_dir_recursive_absolute(_workspace())
+			var dst = _workspace() + "upload.png"
+			var src_file = FileAccess.open(photo_path, FileAccess.READ)
+			var dst_file = FileAccess.open(dst, FileAccess.WRITE)
+			dst_file.store_buffer(src_file.get_buffer(src_file.get_length()))
+			src_file.close()
+			dst_file.close()
+
+			state["photo_path"] = dst
+			state["breedName"] = breed_name
+			_name_edit.text = breed_name
+			_refresh_preview()
+			
+			return
+	# ========== 新增结束 ==========
+	
 	# 恢复：上次会话的工作区产物（向导重开/翻页时自动找回，不重复花钱）
 	if not state.has("photo_path"):
 		for ext in ["jpg", "png"]:

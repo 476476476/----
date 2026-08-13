@@ -13,10 +13,7 @@ func _ready():
 	# 默认播放idle动画
 	animated_sprite.play("idle")
 	
-	# 测试：3秒后自动介绍赤兔马
-	await get_tree().create_timer(3.0).timeout
-	introduce_horse("赤兔马", "此马浑身枣红，日行千里，乃是马中极品，传说中关公的坐骑。")
-
+	
 # 对外调用的入口：传入要介绍的马的名字和介绍文案，伯乐就会开始说话
 func introduce_horse(horse_name: String, intro_text: String):
 	# 1. 拼接完整的介绍文案

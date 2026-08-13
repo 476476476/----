@@ -20,21 +20,21 @@ color = Color(0.8056994, 0.7250947, 0.57358444, 1)
 
 [node name="BoleCharacter" parent="." unique_id=1440891386 instance=ExtResource("2_r4svw")]
 
-[node name="Button" type="Button" parent="." unique_id=1349966766]
+[node name="RecognizeButton" type="Button" parent="." unique_id=1349966766]
 layout_mode = 0
-offset_left = 354.0
+offset_left = 242.0
 offset_top = 437.0
-offset_right = 522.0
+offset_right = 410.0
 offset_bottom = 468.0
-text = "测试：识别到阿拉伯马"
+text = "🔍 开始识马"
 
-[node name="Button2" type="Button" parent="." unique_id=1514459366]
+[node name="PickPhotoButton" type="Button" parent="." unique_id=1514459366]
 layout_mode = 0
-offset_left = 354.0
-offset_top = 385.0
-offset_right = 522.0
-offset_bottom = 416.0
-text = "测试：识别到赤兔马"
+offset_left = 242.0
+offset_top = 386.0
+offset_right = 410.0
+offset_bottom = 417.0
+text = "📁 选择马的照片"
 
 [node name="Button3" type="Button" parent="." unique_id=942183575]
 layout_mode = 0
@@ -44,19 +44,31 @@ text = "返回主菜单"
 
 [node name="StatusLabel" type="Label" parent="." unique_id=444731357]
 layout_mode = 0
-offset_left = 354.0
-offset_top = 268.0
-offset_right = 394.0
-offset_bottom = 291.0
+offset_left = 587.0
+offset_top = 386.0
+offset_right = 689.0
+offset_bottom = 468.0
 
-[node name="AiCreateButton" type="Button" parent="."]
+[node name="AiCreateButton" type="Button" parent="." unique_id=835753627]
 layout_mode = 1
+anchors_preset = 1
 anchor_left = 1.0
-anchor_top = 0.0
 anchor_right = 1.0
-anchor_bottom = 0.0
-offset_left = -130.0
-offset_top = 12.0
-offset_right = -12.0
-offset_bottom = 52.0
-text = "AI 识马"
+offset_left = -354.0
+offset_top = 407.0
+offset_right = -236.0
+offset_bottom = 447.0
+grow_horizontal = 0
+text = "加入图鉴"
+
+[node name="PhotoPreview" type="TextureRect" parent="." unique_id=1964922905]
+custom_minimum_size = Vector2(300, 300)
+layout_mode = 0
+offset_left = 197.0
+offset_top = 31.0
+offset_right = 604.0
+offset_bottom = 367.0
+expand_mode = 1
+stretch_mode = 4
+
+[node name="FileDialog" type="FileDialog" parent="." unique_id=411751495]
